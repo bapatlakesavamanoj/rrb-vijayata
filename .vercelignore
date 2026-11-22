@@ -1,13 +1,13 @@
-# Files not needed in Vercel deployment
-server.js
+# Local helper scripts
 start-server.ps1
 Launch_RRB_App.bat
 *.ps1
 *.bat
+
+# Email test outbox and logs
 data/email-outbox/
 *.log
+
+# Git files
 .git/
 .gitignore
-scripts/
-public/
-package-lock.json
