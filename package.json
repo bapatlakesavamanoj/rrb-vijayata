@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Complete Bilingual (English + Telugu) RRB NTPC Undergraduate & Railway Exam Preparation Application",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo Build validation passed",
-    "test": "node scripts/test.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "firebase": "^10.14.1"

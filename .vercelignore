@@ -1,17 +1,13 @@
-# Exclude local launcher scripts only — NOT server.js (Vercel uses it as entrypoint)
+# Files not needed in Vercel deployment
+server.js
 start-server.ps1
 Launch_RRB_App.bat
 *.ps1
 *.bat
-
-# Exclude local logs and email outbox
 data/email-outbox/
 *.log
-
-# Exclude git metadata
 .git/
 .gitignore
-
-# Exclude local build artifacts
-public/
 scripts/
+public/
+package-lock.json

@@ -1,20 +1,21 @@
 {
   "version": 2,
-  "headers": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" }
-      ]
-    },
-    {
-      "source": "/sw.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
-        { "key": "Service-Worker-Allowed", "value": "/" }
-      ]
+      "src": "api/**/*.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["data/**"]
+      }
     }
+  ],
+  "routes": [
+    { "src": "/api/live-notifications", "dest": "/api/live-notifications.js" },
+    { "src": "/api/notifications",       "dest": "/api/notifications.js" },
+    { "src": "/api/subscribe-alert",     "dest": "/api/subscribe-alert.js" },
+    { "src": "/api/send-custom-alert",   "dest": "/api/send-custom-alert.js" },
+    { "src": "/api/save-smtp-config",    "dest": "/api/save-smtp-config.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
