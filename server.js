@@ -375,20 +375,27 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-// Scheduled background process: periodically auto-checks official feeds every 10 minutes
-setInterval(() => {
-  try {
-    const db = readDb();
-    if (db) {
-      db.lastOfficialSync = `${new Date().toLocaleString('en-IN')} IST - Scheduled Auto-Verification (.gov.in)`;
-      saveDb(db);
-      console.log(`[Scheduled Sync] Live official notifications auto-verified at ${db.lastOfficialSync}`);
+// Scheduled background process: periodically auto-checks official feeds every 10 minutes (only in local server mode)
+if (!process.env.VERCEL) {
+  setInterval(() => {
+    try {
+      const db = readDb();
+      if (db) {
+        db.lastOfficialSync = `${new Date().toLocaleString('en-IN')} IST - Scheduled Auto-Verification (.gov.in)`;
+        saveDb(db);
+        console.log(`[Scheduled Sync] Live official notifications auto-verified at ${db.lastOfficialSync}`);
+      }
+    } catch (err) {
+      console.warn('[Scheduled Sync] Notice:', err.message);
     }
-  } catch (err) {
-    console.warn('[Scheduled Sync] Notice:', err.message);
-  }
-}, 10 * 60 * 1000);
+  }, 10 * 60 * 1000);
+}
 
-server.listen(PORT, () => {
-  console.log(`🚆 RRB Vijetha Exam Preparation App + Backend API running at http://localhost:${PORT}`);
-});
+// Local server listener guard
+if (require.main === module && !process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`🚆 RRB Vijetha Exam Preparation App + Backend API running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = server;
