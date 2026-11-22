@@ -1,5 +1,4 @@
-# Exclude local runner scripts so Vercel does not mistake server.js as a root serverless entrypoint
-server.js
+# Exclude local launcher scripts only — NOT server.js (Vercel uses it as entrypoint)
 start-server.ps1
 Launch_RRB_App.bat
 *.ps1
@@ -9,6 +8,10 @@ Launch_RRB_App.bat
 data/email-outbox/
 *.log
 
-# Exclude development files
+# Exclude git metadata
 .git/
 .gitignore
+
+# Exclude local build artifacts
+public/
+scripts/
