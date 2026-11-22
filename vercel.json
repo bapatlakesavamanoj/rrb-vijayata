@@ -1,24 +1,7 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "cleanUrls": true,
+  "outputDirectory": "public",
   "rewrites": [
-    {
-      "source": "/api/live-notifications",
-      "destination": "/api/live-notifications.js"
-    },
-    {
-      "source": "/api/notifications",
-      "destination": "/api/notifications.js"
-    },
-    {
-      "source": "/api/subscribe-alert",
-      "destination": "/api/subscribe-alert.js"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1.js"
-    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
@@ -28,31 +11,16 @@
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
       ]
     },
     {
       "source": "/sw.js",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        },
-        {
-          "key": "Service-Worker-Allowed",
-          "value": "/"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
       ]
     }
   ]

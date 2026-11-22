@@ -34,7 +34,7 @@ assert(Array.isArray(manifest.icons) && manifest.icons.length >= 2, 'Manifest in
 console.log('\n[Suite 2: Vercel Configuration & Serverless Routes]');
 const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
 assert(vercelConfig.version === 2, 'Vercel config is version 2');
-assert(vercelConfig.outputDirectory === '.', 'outputDirectory is set to root "." for static assets');
+assert(vercelConfig.outputDirectory === 'public', 'outputDirectory is "public" for clean static CDN deployment');
 assert(Array.isArray(vercelConfig.rewrites) && vercelConfig.rewrites.length > 0, 'Rewrites array is configured');
 
 // 3. Test Service Worker Assets Cache
