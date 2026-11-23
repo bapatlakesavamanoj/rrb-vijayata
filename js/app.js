@@ -970,6 +970,10 @@
       // Start 45-second timer
       this.startOtpTimer(45);
 
+      // Auto-Enter OTP automatically
+      this.autoEnterOtp(generatedCode);
+      this.listenWebOtp();
+
       // Reset digit inputs and focus first digit
       for (let i = 1; i <= 6; i++) {
         const d = document.getElementById('otp-d' + i);
