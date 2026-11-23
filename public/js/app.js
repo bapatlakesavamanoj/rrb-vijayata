@@ -59,6 +59,13 @@
     activeView: 'dashboard',
     activeSubjectId: 'math',
     activeTopicId: 'math-number-system',
+    syllabusFlow: {
+      level: 'subjects', // 'subjects' | 'lessons' | 'topics' | 'textbook'
+      subjectId: 'math',
+      lessonId: 'math-number-system',
+      topicCode: '1.1'
+    },
+    syllabusFullChapterMode: false,
     hasMigratedToTextbookV1: true,
     completedTopics: ['math-number-system', 'ga-indian-railways', 'sci-physics'],
     topicNotes: {},
@@ -203,6 +210,12 @@
       const merged = Object.assign({}, defaultState, parsed, {
         currentUser: Object.assign({}, defaultState.currentUser, parsed.currentUser || {})
       });
+      merged.syllabusFlow = merged.syllabusFlow || {
+        level: 'subjects',
+        subjectId: merged.activeSubjectId || 'math',
+        lessonId: merged.activeTopicId || 'math-number-system',
+        topicCode: '1.1'
+      };
       if (!parsed.hasMigratedToTextbookV1) {
         merged.activeSubjectId = 'math';
         merged.activeTopicId = 'math-number-system';
@@ -1725,6 +1738,32 @@
                 💼 Latest Railway Jobs (${(window.RRB_LATEST_JOBS || []).filter(j => j.statusCode === 'open').length} Open)
               </button>
             </div>
+          </div>
+        </div>
+
+        <!-- 4-Level Syllabus Preparation Pathway Banner -->
+        <div class="card" style="margin-bottom:24px; background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%); color:#fff; border:none; padding:22px 26px; box-shadow:var(--shadow-md); border-radius:var(--radius-xl);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(245, 158, 11, 0.25); border:1px solid rgba(245, 158, 11, 0.5); color:#fef08a; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:800; letter-spacing:0.04em; margin-bottom:8px;">
+                ⭐ OFFICIAL RRB PREPARATION PATHWAY • 4-LEVEL STRUCTURE
+              </div>
+              <h2 style="font-size:1.32rem; font-weight:900; color:#fff; margin:0 0 8px;">
+                Preparation / Syllabus (సిలబస్ & వాస్తవిక పాఠ్యపుస్తక అధ్యయనం)
+              </h2>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:0.86rem; color:#bfdbfe;">
+                <span style="background:rgba(255,255,255,0.14); padding:3px 10px; border-radius:999px; color:#fff; font-weight:700;">1. Syllabus (సిలబస్)</span>
+                <span>➔</span>
+                <span style="background:rgba(255,255,255,0.14); padding:3px 10px; border-radius:999px; color:#fff; font-weight:700;">2. Subject (సబ్జెక్ట్)</span>
+                <span>➔</span>
+                <span style="background:rgba(255,255,255,0.14); padding:3px 10px; border-radius:999px; color:#fff; font-weight:700;">3. Lessons (పాఠాలు)</span>
+                <span>➔</span>
+                <span style="background:#f59e0b; color:#0f172a; padding:3px 10px; border-radius:999px; font-weight:800;">4. Realistic Textbook (పాఠ్యపుస్తకం) 📖</span>
+              </div>
+            </div>
+            <button class="btn btn-accent btn-lg" onclick="App.openSyllabusRoot()" style="font-weight:800; box-shadow:0 10px 20px -5px rgba(245,158,11,0.5);">
+              📖 Start Syllabus Preparation →
+            </button>
           </div>
         </div>
 
@@ -3485,9 +3524,709 @@
       }
     },
 
-    renderLessonsView: function () {
+    
+    // ============================================================================
+    // 4-LEVEL SYLLABUS PREPARATION & REALISTIC TEXTBOOK READER
+    // Level 1: Syllabus (Subjects) → Level 2: Lessons → Level 3: Topics → Level 4: Realistic Textbook
+    // ============================================================================
+
+    openSyllabusRoot: function () {
+      state.syllabusFlow = {
+        level: 'subjects',
+        subjectId: state.activeSubjectId || 'math',
+        lessonId: state.activeTopicId || 'math-number-system',
+        topicCode: '1.1'
+      };
+      state.syllabusFullChapterMode = false;
+      saveState();
+      this.navigate('lessons');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    openSyllabusSubject: function (subjectId) {
+      state.syllabusFlow = state.syllabusFlow || {};
+      state.syllabusFlow.level = 'lessons';
+      state.syllabusFlow.subjectId = subjectId;
+      state.activeSubjectId = subjectId;
+      state.syllabusFullChapterMode = false;
+      const sub = window.RRB_SUBJECTS.find(s => s.id === subjectId) || window.RRB_SUBJECTS[0];
+      if (sub.topics && sub.topics[0]) {
+        state.syllabusFlow.lessonId = sub.topics[0].id;
+        state.activeTopicId = sub.topics[0].id;
+      }
+      saveState();
+      this.renderLessonsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    openSyllabusLesson: function (subjectId, lessonId) {
+      state.syllabusFlow = state.syllabusFlow || {};
+      state.syllabusFlow.level = 'topics';
+      state.syllabusFlow.subjectId = subjectId;
+      state.syllabusFlow.lessonId = lessonId;
+      state.activeSubjectId = subjectId;
+      state.activeTopicId = lessonId;
+      state.syllabusFullChapterMode = false;
+      saveState();
+      this.renderLessonsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    openSyllabusTopic: function (subjectId, lessonId, topicCode) {
+      state.syllabusFlow = state.syllabusFlow || {};
+      state.syllabusFlow.level = 'textbook';
+      state.syllabusFlow.subjectId = subjectId;
+      state.syllabusFlow.lessonId = lessonId;
+      state.syllabusFlow.topicCode = topicCode;
+      state.activeSubjectId = subjectId;
+      state.activeTopicId = lessonId;
+      state.syllabusFullChapterMode = false;
+      saveState();
+      this.renderLessonsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    toggleSyllabusMode: function (enableFullChapter) {
+      state.syllabusFullChapterMode = Boolean(enableFullChapter);
+      saveState();
+      this.renderLessonsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    getLessonSubtopics: function (subjectId, lessonId) {
+      // 1. Math textbook chapters catalog
+      if (window.RRB_MATH_TEXTBOOK_CHAPTERS && window.RRB_MATH_TEXTBOOK_CHAPTERS[lessonId]?.subTopics?.length > 0) {
+        return window.RRB_MATH_TEXTBOOK_CHAPTERS[lessonId].subTopics;
+      }
+      // 2. Comprehensive catalog for Reasoning, GA, Science
+      if (window.RRB_ALL_TEXTBOOK_SUBTOPICS && window.RRB_ALL_TEXTBOOK_SUBTOPICS[lessonId]?.length > 0) {
+        return window.RRB_ALL_TEXTBOOK_SUBTOPICS[lessonId];
+      }
+      // 3. Subject topic's own subtopics
+      const sub = window.RRB_SUBJECTS.find(s => s.id === subjectId) || window.RRB_SUBJECTS[0];
+      const lesson = sub.topics.find(t => t.id === lessonId) || sub.topics[0];
+      if (lesson && Array.isArray(lesson.subTopics) && lesson.subTopics.length > 0) {
+        return lesson.subTopics;
+      }
+      // 4. Fallback generator from lesson metadata
+      const lNo = (sub.topics.findIndex(t => t.id === lesson.id) + 1) || 1;
+      const ex1 = (lesson.examples && lesson.examples[0]) || { qEn: 'Official RRB Model Question', qTe: 'రైల్వే పరీక్ష నమూనా ప్రశ్న', solEn: 'Step-by-step verified textbook solution.', solTe: 'సోపానాల వారీగా సాధించిన వివరణ.' };
+      const ex2 = (lesson.examples && lesson.examples[1]) || ex1;
+      return [
+        {
+          code: lNo + '.1',
+          titleEn: lesson.titleEn + ' — Fundamental Concepts & Theory',
+          titleTe: lesson.titleTe + ' — ప్రాథమిక భావనలు & సిద్ధాంతం',
+          importance: lesson.importance || 'High Yield (1–2 Qs)',
+          readTime: '8 mins',
+          conceptEn: lesson.conceptEn || 'Core concepts and theoretical principles for Railway examinations.',
+          conceptTe: lesson.conceptTe || 'రైల్వే పరీక్షకు అవసరమైన ప్రాథమిక సిద్ధాంతం మరియు భావనలు.',
+          formula: (lesson.formulas && lesson.formulas[0]) || 'Important Mathematical Formulas & Relationships',
+          formulas: lesson.formulas || [],
+          shortcutEn: lesson.shortcutEn || '⚡ Apply direct option elimination for fast solving in under 5 seconds.',
+          shortcutTe: lesson.shortcutTe || '⚡ ఆప్షన్ ఎలిమినేషన్ పద్ధతి ద్వారా 5 సెకన్లలో వేగంగా సాధించండి.',
+          trapEn: 'Carefully verify whether the question asks for intermediate values or final answers.',
+          trapTe: 'ప్రశ్నలో అడిగినది తుది సమాధానమా లేక మధ్యంతర విలువా అనేది జాగ్రత్తగా చూడండి.',
+          exampleQEn: ex1.qEn,
+          exampleQTe: ex1.qTe,
+          exampleSolEn: ex1.solEn,
+          exampleSolTe: ex1.solTe,
+          drill: {
+            questionEn: ex1.qEn,
+            questionTe: ex1.qTe,
+            optionsEn: ['A) Option A', 'B) Option B (Correct)', 'C) Option C', 'D) Option D'],
+            optionsTe: ['A) ఆప్షన్ A', 'B) ఆప్షన్ B (సరైనది)', 'C) ఆప్షన్ C', 'D) ఆప్షన్ D'],
+            correctIdx: 1,
+            explanationEn: ex1.solEn,
+            explanationTe: ex1.solTe
+          }
+        },
+        {
+          code: lNo + '.2',
+          titleEn: lesson.titleEn + ' — Advanced Solved Models & Exam Shortcuts',
+          titleTe: lesson.titleTe + ' — పరీక్ష మోడల్స్ & షార్ట్‌కట్ ట్రిక్స్',
+          importance: 'Exam Level (1–2 Qs)',
+          readTime: '7 mins',
+          conceptEn: lesson.conceptEn ? lesson.conceptEn.slice(0, 320) : 'Advanced problem solving techniques.',
+          conceptTe: lesson.conceptTe ? lesson.conceptTe.slice(0, 320) : 'పరీక్ష స్థాయి ప్రశ్నల సాధన పద్ధతులు.',
+          formula: (lesson.formulas && (lesson.formulas[1] || lesson.formulas[0])) || 'Rules and Laws',
+          shortcutEn: lesson.shortcutEn || '⚡ Fast ratio method cuts calculation steps by half.',
+          shortcutTe: lesson.shortcutTe || '⚡ నిష్పత్తుల పద్ధతి ద్వారా సమయాన్ని ఆదా చేయండి.',
+          trapEn: 'Watch out for reverse unit conversions (e.g. km/h to m/s).',
+          trapTe: 'ప్రమాణాల మార్పిడిని సరిచూసుకోండి (కిమీ/గం నుండి మీ/సె).',
+          exampleQEn: ex2.qEn,
+          exampleQTe: ex2.qTe,
+          exampleSolEn: ex2.solEn,
+          exampleSolTe: ex2.solTe
+        }
+      ];
+    },
+
+    answerTextbookDrill: function (topicCode, optionIdx, correctIdx) {
+      const container = document.getElementById('tb-drill-container');
+      if (!container) return;
+      const buttons = container.querySelectorAll('.tb-drill-option-btn');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === correctIdx) {
+          btn.classList.add('correct');
+        } else if (idx === optionIdx) {
+          btn.classList.add('incorrect');
+        }
+      });
+      const feedback = document.getElementById('tb-drill-feedback');
+      if (feedback) feedback.classList.remove('hidden');
+    },
+
+    navigateTextbookTopic: function (delta) {
+      const sub = window.RRB_SUBJECTS.find(s => s.id === state.syllabusFlow.subjectId) || window.RRB_SUBJECTS[0];
+      const lesson = sub.topics.find(t => t.id === state.syllabusFlow.lessonId) || sub.topics[0];
+      const subtopics = this.getLessonSubtopics(sub.id, lesson.id);
+      const currIdx = subtopics.findIndex(st => st.code === state.syllabusFlow.topicCode);
+      const nextIdx = currIdx + delta;
+      if (nextIdx >= 0 && nextIdx < subtopics.length) {
+        this.openSyllabusTopic(sub.id, lesson.id, subtopics[nextIdx].code);
+      } else if (nextIdx >= subtopics.length) {
+        // Move to next lesson if available
+        const lIdx = sub.topics.findIndex(t => t.id === lesson.id);
+        if (lIdx + 1 < sub.topics.length) {
+          const nextLesson = sub.topics[lIdx + 1];
+          const nextSubtopics = this.getLessonSubtopics(sub.id, nextLesson.id);
+          this.openSyllabusTopic(sub.id, nextLesson.id, nextSubtopics[0].code);
+        } else {
+          this.openSyllabusSubject(sub.id);
+        }
+      } else if (nextIdx < 0) {
+        // Move to previous lesson if available
+        const lIdx = sub.topics.findIndex(t => t.id === lesson.id);
+        if (lIdx > 0) {
+          const prevLesson = sub.topics[lIdx - 1];
+          const prevSubtopics = this.getLessonSubtopics(sub.id, prevLesson.id);
+          this.openSyllabusTopic(sub.id, prevLesson.id, prevSubtopics[prevSubtopics.length - 1].code);
+        } else {
+          this.openSyllabusLesson(sub.id, lesson.id);
+        }
+      }
+    },
+
+    toggleTopicMastered: function (codeOrId) {
+      const idx = state.completedTopics.indexOf(codeOrId);
+      if (idx === -1) {
+        state.completedTopics.push(codeOrId);
+      } else {
+        state.completedTopics.splice(idx, 1);
+      }
+      saveState();
+      this.renderLessonsView();
+    },
+
+    // ── LEVEL 1: ALL SUBJECTS VIEW ───────────────────────────────────────────
+    renderSyllabusLevelSubjects: function (container) {
+      const exam = window.RRB_EXAMS.find(e => e.id === state.currentUser?.examId) || window.RRB_EXAMS[0];
+      
+      container.innerHTML = `
+        <div class="syllabus-container">
+          <!-- Breadcrumb Trail -->
+          <div class="syllabus-breadcrumbs-bar">
+            <span class="syllabus-breadcrumb-item active">📖 All RRB Subjects (అన్ని సిలబస్ సబ్జెక్టులు)</span>
+          </div>
+
+          <!-- Hero Banner -->
+          <div class="syllabus-level-hero">
+            <div>
+              <span class="syllabus-level-badge">LEVEL 1 • OFFICIAL RRB BLUEPRINT</span>
+              <h2 style="font-size:1.42rem; font-weight:900; color:#fff; margin:8px 0 4px;">
+                RRB Official Examination Syllabus (రైల్వే రిక్రూట్‌మెంట్ సిలబస్ & తయారీ)
+              </h2>
+              <p style="font-size:0.86rem; color:#bfdbfe; margin:0;">
+                Select an Official Examination Subject below to explore its Chapters, Lessons & Realistic Textbook Topics
+              </p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <span class="badge badge-amber" style="font-size:0.82rem; padding:6px 12px;">🎯 Target: ${exam.nameEn}</span>
+              <button class="btn btn-sm" style="background:rgba(255,255,255,0.18); color:#fff; border:1px solid rgba(255,255,255,0.3);" onclick="App.openExamOnboardingModal()">
+                Change Cadre
+              </button>
+            </div>
+          </div>
+
+          <!-- Subjects Grid -->
+          <div class="syllabus-subjects-grid">
+            ${window.RRB_SUBJECTS.map(sub => {
+              let totalSubtopicsCount = 0;
+              sub.topics.forEach(t => {
+                totalSubtopicsCount += this.getLessonSubtopics(sub.id, t.id).length;
+              });
+              const doneCount = sub.topics.filter(t => state.completedTopics.includes(t.id)).length;
+              const subPct = Math.round((doneCount / sub.topics.length) * 100);
+
+              return `
+                <div class="syllabus-subject-card" onclick="App.openSyllabusSubject('${sub.id}')">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div class="syllabus-subject-icon-box" style="background:${sub.color}22; border:1px solid ${sub.color}44;">
+                      ${sub.icon}
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                      <span class="badge badge-blue">CBT-1: ${sub.weightageCbt1}</span>
+                      <span class="badge badge-amber" style="font-size:0.7rem;">CBT-2: ${sub.weightageCbt2}</span>
+                    </div>
+                  </div>
+
+                  <h3 style="font-size:1.2rem; font-weight:800; color:var(--text-main); margin:0 0 4px;">
+                    ${sub.nameEn}
+                  </h3>
+                  <div class="te-text" style="font-size:0.88rem; color:#b45309; font-weight:700; margin-bottom:12px;">
+                    ${sub.nameTe}
+                  </div>
+
+                  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                    <span class="badge badge-gray">📚 ${sub.topics.length} Chapters</span>
+                    <span class="badge badge-green">📄 ${totalSubtopicsCount} Realistic Topics</span>
+                    <span class="badge badge-purple">🎙️ Bilingual Audio</span>
+                  </div>
+
+                  <div style="margin-top:auto;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:6px;">
+                      <span>Syllabus Completion</span>
+                      <span>${subPct}%</span>
+                    </div>
+                    <div class="progress-track" style="margin-bottom:16px;">
+                      <div class="progress-fill" style="width:${subPct}%; background:${sub.color};"></div>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                      <button class="btn btn-primary" style="flex:1; justify-content:center; font-weight:700;" onclick="event.stopPropagation(); App.openSyllabusSubject('${sub.id}')">
+                        Explore Lessons (పాఠాలు చూడండి) →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    },
+
+    // ── LEVEL 2: LESSONS IN SELECTED SUBJECT ──────────────────────────────────
+    renderSyllabusLevelLessons: function (container, subject) {
+      container.innerHTML = `
+        <div class="syllabus-container">
+          <!-- Breadcrumb Trail -->
+          <div class="syllabus-breadcrumbs-bar">
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusRoot()">📖 Syllabus (సిలబస్)</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <span class="syllabus-breadcrumb-item active">${subject.icon} ${subject.nameEn} (${subject.nameTe})</span>
+          </div>
+
+          <!-- Hero Banner -->
+          <div class="syllabus-level-hero">
+            <div>
+              <span class="syllabus-level-badge">LEVEL 2 • SUBJECT CHAPTERS & LESSONS</span>
+              <h2 style="font-size:1.4rem; font-weight:900; color:#fff; margin:8px 0 4px;">
+                ${subject.icon} ${subject.nameEn} — All Chapters & Lessons
+              </h2>
+              <p style="font-size:0.86rem; color:#bfdbfe; margin:0;">
+                ${subject.nameTe} • ${subject.topics.length} Lessons • ${subject.weightageCbt1}
+              </p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.3);" onclick="App.openSyllabusRoot()">
+                ← All Subjects (అన్ని సబ్జెక్టులు)
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Subject Switcher Tabs -->
+          <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+            ${window.RRB_SUBJECTS.map(s => `
+              <button class="btn btn-sm ${s.id === subject.id ? 'btn-primary' : 'btn-outline'}" style="font-weight:700;" onclick="App.openSyllabusSubject('${s.id}')">
+                ${s.icon} ${s.nameEn}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Lessons Grid -->
+          <div class="syllabus-lessons-grid">
+            ${subject.topics.map((t, idx) => {
+              const subtopics = this.getLessonSubtopics(subject.id, t.id);
+              const isDone = state.completedTopics.includes(t.id);
+
+              return `
+                <div class="syllabus-lesson-card" onclick="App.openSyllabusLesson('${subject.id}', '${t.id}')">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <span class="syllabus-lesson-number-pill">CHAPTER ${idx + 1}</span>
+                    <span class="badge badge-amber">${t.importance}</span>
+                  </div>
+
+                  <h3 style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin:0 0 4px;">
+                    ${t.titleEn}
+                  </h3>
+                  <div class="te-text" style="font-size:0.86rem; color:#b45309; font-weight:700; margin-bottom:12px;">
+                    ${t.titleTe}
+                  </div>
+
+                  <p style="font-size:0.83rem; color:var(--text-secondary); margin:0 0 14px; line-height:1.5;">
+                    ${t.conceptEn ? (t.conceptEn.length > 110 ? t.conceptEn.slice(0, 110) + '...' : t.conceptEn) : ''}
+                  </p>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:12px; border-top:1px solid var(--border-color);">
+                    <span class="badge badge-blue">📚 ${subtopics.length} Realistic Topics</span>
+                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); App.openSyllabusLesson('${subject.id}', '${t.id}')">
+                      View Topics (టాపిక్స్ చూడండి) →
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    },
+
+    // ── LEVEL 3: TOPICS IN SELECTED LESSON ────────────────────────────────────
+    renderSyllabusLevelTopics: function (container, subject, lesson) {
+      const subtopics = this.getLessonSubtopics(subject.id, lesson.id);
+      const isCompleted = state.completedTopics.includes(lesson.id);
+
+      container.innerHTML = `
+        <div class="syllabus-container">
+          <!-- Breadcrumb Trail -->
+          <div class="syllabus-breadcrumbs-bar">
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusRoot()">📖 Syllabus</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusSubject('${subject.id}')">${subject.icon} ${subject.nameEn}</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <span class="syllabus-breadcrumb-item active">📚 ${lesson.titleEn}</span>
+          </div>
+
+          <!-- Hero Banner -->
+          <div class="syllabus-level-hero">
+            <div>
+              <span class="syllabus-level-badge">LEVEL 3 • GRANULAR SYLLABUS TOPICS (${subtopics.length} TOPICS)</span>
+              <h2 style="font-size:1.4rem; font-weight:900; color:#fff; margin:8px 0 4px;">
+                ${lesson.titleEn}
+              </h2>
+              <p style="font-size:0.86rem; color:#bfdbfe; margin:0;">
+                ${lesson.titleTe} • ${subtopics.length} In-depth Topics inside this Chapter
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.3);" onclick="App.openSyllabusSubject('${subject.id}')">
+                ← Back to Lessons (పాఠాల జాబితా)
+              </button>
+              <button class="btn ${isCompleted ? 'btn-success' : 'btn-soft'} btn-sm" onclick="App.toggleTopicMastered('${lesson.id}')">
+                ${isCompleted ? '✓ Chapter Completed' : '○ Mark Chapter Done'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Topics List -->
+          <div class="syllabus-topics-list">
+            ${subtopics.map(st => {
+              const isTopicDone = state.completedTopics.includes(st.code) || state.completedTopics.includes(lesson.id);
+
+              return `
+                <div class="syllabus-topic-item-card" onclick="App.openSyllabusTopic('${subject.id}', '${lesson.id}', '${st.code}')">
+                  <div style="display:flex; align-items:flex-start; gap:16px; flex:1; min-width:280px;">
+                    <div class="syllabus-topic-code-badge">
+                      ${st.code}
+                    </div>
+                    <div>
+                      <h4 style="font-size:1.02rem; font-weight:800; color:var(--text-main); margin:0 0 3px;">
+                        ${st.titleEn}
+                      </h4>
+                      <div class="te-text" style="font-size:0.86rem; color:#b45309; font-weight:700; margin-bottom:6px;">
+                        ${st.titleTe}
+                      </div>
+                      <p style="font-size:0.82rem; color:var(--text-secondary); margin:0 0 8px; line-height:1.5;">
+                        ${st.conceptEn ? (st.conceptEn.length > 140 ? st.conceptEn.slice(0, 140) + '...' : st.conceptEn) : ''}
+                      </p>
+                      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <span class="badge badge-amber">${st.importance || 'High Yield'}</span>
+                        <span class="badge badge-blue">⏱️ ${st.readTime || '8 mins'}</span>
+                        <span class="badge badge-green">⚡ Shortcut Trick Included</span>
+                        <span class="badge badge-purple">✍️ Solved Exam Question</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); App.openSyllabusTopic('${subject.id}', '${lesson.id}', '${st.code}')" style="font-weight:700;">
+                      📖 Read Realistic Textbook →
+                    </button>
+                    ${isTopicDone ? '<span style="font-size:0.75rem; color:#059669; font-weight:700;">✓ Completed</span>' : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    },
+
+    // ── LEVEL 4: REALISTIC PHYSICAL TEXTBOOK READER ───────────────────────────
+    renderSyllabusLevelTextbook: function (container, subject, lesson) {
+      const subtopics = this.getLessonSubtopics(subject.id, lesson.id);
+      const activeTopicCode = state.syllabusFlow.topicCode || subtopics[0].code;
+      const subtopic = subtopics.find(st => st.code === activeTopicCode) || subtopics[0];
+      const lIdx = (subject.topics.findIndex(t => t.id === lesson.id) + 1) || 1;
+      const isDone = state.completedTopics.includes(subtopic.code);
+      const pageNumber = Math.abs(hashCode(subtopic.code)) % 380 + 20;
+
+      container.innerHTML = `
+        <div class="syllabus-container">
+          <!-- Breadcrumb Trail -->
+          <div class="syllabus-breadcrumbs-bar">
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusRoot()">📖 Syllabus</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusSubject('${subject.id}')">${subject.icon} ${subject.nameEn}</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <button class="syllabus-breadcrumb-item" onclick="App.openSyllabusLesson('${subject.id}', '${lesson.id}')">📚 ${lesson.titleEn}</button>
+            <span class="syllabus-breadcrumb-separator">›</span>
+            <span class="syllabus-breadcrumb-item active">📄 Topic ${subtopic.code}: ${subtopic.titleEn}</span>
+          </div>
+
+          <!-- Top Navigation & Controls Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="App.openSyllabusLesson('${subject.id}', '${lesson.id}')">
+                ← Back to Topics (టాపిక్స్ జాబితా)
+              </button>
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                ${subtopics.map(st => `
+                  <button class="btn btn-sm ${st.code === subtopic.code ? 'btn-primary' : 'btn-outline'}" style="padding:3px 8px; font-size:0.75rem; font-weight:700;" onclick="App.openSyllabusTopic('${subject.id}', '${lesson.id}', '${st.code}')">
+                    ${st.code}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button class="btn ${isDone ? 'btn-success' : 'btn-outline'} btn-sm" onclick="App.toggleTopicMastered('${subtopic.code}')">
+                ${isDone ? '✓ Mastered' : '○ Mark Topic Mastered'}
+              </button>
+              <button class="btn btn-soft btn-sm" onclick="App.toggleSyllabusMode(true)" title="Switch to Full Monolithic 13-Section Chapter Layout">
+                📚 Full 13-Section View
+              </button>
+            </div>
+          </div>
+
+          <!-- THE REALISTIC PHYSICAL TEXTBOOK PAGE -->
+          <div class="textbook-wrapper">
+            <article class="textbook-book-page">
+              <!-- Running Header -->
+              <div class="tb-running-head">
+                <span>GOVERNMENT OF INDIA • MINISTRY OF RAILWAYS</span>
+                <span>RRB ALL-INDIA PREPARATION TEXTBOOK</span>
+                <span>CEN 2026-2027 EDITION</span>
+              </div>
+
+              <!-- Official Stamp -->
+              <div class="tb-official-stamp">
+                ★ OFFICIAL CEN SYLLABUS EDITION • BILINGUAL STUDY TEXTBOOK ★
+              </div>
+
+              <!-- Titleplate -->
+              <div class="tb-titleplate">
+                <span class="tb-chapter-code-pill">CHAPTER ${lIdx} • TOPIC ${subtopic.code}</span>
+                <h1 class="tb-main-title">${subtopic.titleEn}</h1>
+                <div class="tb-telugu-title">${subtopic.titleTe}</div>
+                <div class="tb-meta-tags">
+                  <span class="badge badge-amber">${subtopic.importance || 'High Yield (2-3 Questions)'}</span>
+                  <span class="badge badge-blue">⏱️ Suggested Read: ${subtopic.readTime || '8 mins'}</span>
+                  <span class="badge badge-green">✓ Railway CEN Syllabus Verified</span>
+                </div>
+              </div>
+
+              <!-- Section 1: Fundamental Concept & Theory -->
+              <div class="tb-section-header">
+                <span class="tb-sec-icon">📖</span>
+                <span>1. Fundamental Concepts & Theory (ప్రాథమిక భావనలు & సిద్ధాంతం)</span>
+              </div>
+              <div class="tb-concept-body">
+                ${subtopic.conceptEn || ''}
+              </div>
+
+              <!-- Telugu Teacher Explanation Callout -->
+              ${subtopic.conceptTe ? `
+                <div class="tb-telugu-card">
+                  <div class="tb-telugu-card-title">
+                    <span>🎙️</span>
+                    <span>తెలుగు ఉపాధ్యాయుని వివరణ (Telugu Teacher Explanation):</span>
+                  </div>
+                  <div class="tb-telugu-card-content">
+                    ${subtopic.conceptTe}
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Section 2: Golden Formula & Rules -->
+              ${(subtopic.formula || (subtopic.formulas && subtopic.formulas.length > 0)) ? `
+                <div class="tb-section-header">
+                  <span class="tb-sec-icon">📐</span>
+                  <span>2. Golden Formula & Laws (కీలక సూత్రాలు & నియమాలు)</span>
+                </div>
+                <div class="tb-formula-box">
+                  <div class="tb-formula-label">
+                    <span>⚡</span>
+                    <span>Formula Reference & Mathematical Principles:</span>
+                  </div>
+                  <div class="tb-formula-math">
+                    ${subtopic.formula || subtopic.formulas.join('\n• ')}
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Section 3: Step-by-Step Solved Problem -->
+              ${subtopic.exampleQEn ? `
+                <div class="tb-section-header">
+                  <span class="tb-sec-icon">✍️</span>
+                  <span>3. Solved Textbook Problem (సాధించిన ఉదాహరణ)</span>
+                </div>
+                <div class="tb-example-box">
+                  <span class="tb-example-badge">Official RRB Previous-Year Model Question</span>
+                  <div class="tb-example-q-en"><strong>Question:</strong> ${subtopic.exampleQEn}</div>
+                  ${subtopic.exampleQTe ? `<div class="tb-example-q-te"><strong>ప్రశ్న:</strong> ${subtopic.exampleQTe}</div>` : ''}
+
+                  <div class="tb-solution-card">
+                    <div class="tb-solution-title">✓ Step-by-Step Solution & Reasoning:</div>
+                    <div class="tb-solution-text">${subtopic.exampleSolEn || ''}</div>
+                    ${subtopic.exampleSolTe ? `
+                      <div class="tb-solution-text te-text" style="color:#78350f; margin-top:8px; padding-top:6px; border-top:1px dashed #cbd5e1;">
+                        <strong>తెలుగు సాధన:</strong> ${subtopic.exampleSolTe}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Section 4: 5-Second Railway Exam Shortcut Trick -->
+              ${subtopic.shortcutEn ? `
+                <div class="tb-section-header">
+                  <span class="tb-sec-icon">⚡</span>
+                  <span>4. 5-Second Railway Exam Shortcut (రైల్వే పరీక్ష షార్ట్‌కట్ ట్రిక్)</span>
+                </div>
+                <div class="tb-shortcut-box">
+                  <div class="tb-shortcut-label">
+                    <span>💡</span>
+                    <span>Examiner's Mind-Trick & 5-Second Secret:</span>
+                  </div>
+                  <div class="tb-shortcut-content">
+                    ${subtopic.shortcutEn}
+                  </div>
+                  ${subtopic.shortcutTe ? `
+                    <div class="tb-shortcut-content te-text" style="color:#78350f; margin-top:8px; padding-top:6px; border-top:1px dashed #fde68a;">
+                      ${subtopic.shortcutTe}
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+
+              <!-- Section 5: Common Traps & Exam Pitfalls -->
+              ${subtopic.trapEn ? `
+                <div class="tb-trap-box">
+                  <div class="tb-trap-label">⚠️ Common Mistakes & Exam Pitfalls to Avoid:</div>
+                  <div class="tb-trap-text">${subtopic.trapEn}</div>
+                  ${subtopic.trapTe ? `<div class="tb-trap-text te-text" style="margin-top:4px;">${subtopic.trapTe}</div>` : ''}
+                </div>
+              ` : ''}
+
+              <!-- Section 6: Interactive Self-Assessment Drill -->
+              ${subtopic.drill ? `
+                <div class="tb-section-header">
+                  <span class="tb-sec-icon">🎯</span>
+                  <span>5. Instant Self-Assessment Drill (స్వీయ మూల్యాంకన ప్రశ్న)</span>
+                </div>
+                <div class="tb-drill-box" id="tb-drill-container">
+                  <div class="tb-drill-header">
+                    <span class="badge badge-blue">Interactive Drill Question</span>
+                    <span style="font-size:0.78rem; color:var(--text-muted);">Click an option to test your understanding</span>
+                  </div>
+                  <div style="font-size:0.98rem; font-weight:700; color:#0f172a; margin-bottom:4px;">
+                    ${subtopic.drill.questionEn}
+                  </div>
+                  ${subtopic.drill.questionTe ? `
+                    <div class="te-text" style="font-size:0.92rem; color:#b45309; font-weight:600; margin-bottom:12px;">
+                      ${subtopic.drill.questionTe}
+                    </div>
+                  ` : ''}
+
+                  <div class="tb-drill-options-grid">
+                    ${subtopic.drill.optionsEn.map((opt, oIdx) => `
+                      <button type="button" class="tb-drill-option-btn" onclick="App.answerTextbookDrill('${subtopic.code}', ${oIdx}, ${subtopic.drill.correctIdx})">
+                        ${opt}
+                        ${subtopic.drill.optionsTe && subtopic.drill.optionsTe[oIdx] ? `<div class="te-text" style="font-size:0.78rem; opacity:0.85; margin-top:2px;">${subtopic.drill.optionsTe[oIdx]}</div>` : ''}
+                      </button>
+                    `).join('')}
+                  </div>
+
+                  <div id="tb-drill-feedback" class="tb-drill-feedback hidden">
+                    <div style="font-weight:800; color:#047857; margin-bottom:4px;">✓ Correct Explanation & Reasoning:</div>
+                    <div style="color:#1e293b;">${subtopic.drill.explanationEn}</div>
+                    ${subtopic.drill.explanationTe ? `
+                      <div class="te-text" style="color:#78350f; margin-top:6px; font-weight:500;">
+                        ${subtopic.drill.explanationTe}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Running Foot -->
+              <div class="tb-running-foot">
+                <span>Page ${pageNumber} • RRB VIJETHA MASTER TEXTBOOK</span>
+                <span>CENTRALIZED EMPLOYMENT NOTICE (CEN) PREPARATION</span>
+                <span>© MINISTRY OF RAILWAYS PREP</span>
+              </div>
+            </article>
+
+            <!-- Bottom Navigation Bar -->
+            <div class="tb-nav-buttons-bar">
+              <button class="btn btn-outline" onclick="App.navigateTextbookTopic(-1)">
+                ← Previous Topic
+              </button>
+              <button class="btn ${isDone ? 'btn-success' : 'btn-primary'}" onclick="App.toggleTopicMastered('${subtopic.code}')">
+                ${isDone ? '✓ Topic Completed' : '○ Mark Topic Mastered'}
+              </button>
+              <button class="btn btn-outline" onclick="App.navigateTextbookTopic(1)">
+                Next Topic →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+
+
+        renderLessonsView: function () {
       const container = document.getElementById('lessons-dynamic');
       if (!container) return;
+
+      state.syllabusFlow = state.syllabusFlow || {
+        level: 'subjects',
+        subjectId: state.activeSubjectId || 'math',
+        lessonId: state.activeTopicId || 'math-number-system',
+        topicCode: '1.1'
+      };
+
+      // If in 4-Level Syllabus & Realistic Textbook Mode (Default)
+      if (!state.syllabusFullChapterMode) {
+        const currentSub = window.RRB_SUBJECTS.find(s => s.id === state.syllabusFlow.subjectId) || window.RRB_SUBJECTS[0];
+        const currentTopic = currentSub.topics.find(t => t.id === state.syllabusFlow.lessonId) || currentSub.topics[0];
+
+        if (state.syllabusFlow.level === 'subjects') {
+          return this.renderSyllabusLevelSubjects(container);
+        } else if (state.syllabusFlow.level === 'lessons') {
+          return this.renderSyllabusLevelLessons(container, currentSub);
+        } else if (state.syllabusFlow.level === 'topics') {
+          return this.renderSyllabusLevelTopics(container, currentSub, currentTopic);
+        } else if (state.syllabusFlow.level === 'textbook') {
+          return this.renderSyllabusLevelTextbook(container, currentSub, currentTopic);
+        }
+      }
+
+      // Fallback: Full 13-Section Chapter View
 
       const currentSub = window.RRB_SUBJECTS.find(s => s.id === state.activeSubjectId) || window.RRB_SUBJECTS[0];
       const currentTopic = currentSub.topics.find(t => t.id === state.activeTopicId) || currentSub.topics[0];
