@@ -150,8 +150,12 @@
             🔥 <span id="topbar-fb-label">Firebase</span>
           </button>
 
-          <button class="btn btn-soft btn-sm" onclick="App.openAuthModal('register')">
-            👤 Register / Login
+          <button id="btn-topbar-auth" class="btn btn-soft btn-sm" onclick="App.openAuthModal('register')">
+            <span id="topbar-user-badge">👤 Register / Login</span>
+          </button>
+
+          <button id="btn-otp-status" class="btn btn-outline btn-sm hidden" onclick="App.logoutOtpGate()" title="Click to Sign Out or Switch Verified Mobile/Email" style="border-color:#10b981; color:#059669; font-weight:700;">
+            <span id="otp-status-badge">🔒 Verified</span> • Sign Out
           </button>
         </div>
       </header>
@@ -272,6 +276,149 @@
         </div>
       </div>
       <canvas id="scratchpad-canvas" width="630" height="360" style="width:100%; background:#fffbeb; border:2px dashed #f59e0b; border-radius:var(--radius-md); cursor:crosshair; touch-action:none;"></canvas>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MANDATORY STUDENT VERIFICATION GATE (MOBILE / EMAIL OTP ACCESS)
+       ======================================================================== -->
+  <div id="otp-gate-backdrop" class="modal-backdrop hidden" style="z-index:99999; background:rgba(15, 23, 42, 0.94); backdrop-filter:blur(10px);">
+    <div class="auth-modal otp-gate-card" style="max-width:520px; border:2px solid rgba(59, 130, 246, 0.45); box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      
+      <!-- Gate Header -->
+      <div class="auth-header" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%); text-align:center; padding:26px 22px 18px;">
+        <div style="font-size:2.4rem; line-height:1; margin-bottom:8px;">🚆</div>
+        <div style="display:inline-block; background:rgba(245, 158, 11, 0.2); border:1px solid rgba(245, 158, 11, 0.5); color:#fef08a; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">
+          OFFICIAL CANDIDATE ACCESS GATE • అధికారిక ప్రవేశం
+        </div>
+        <h2 style="font-size:1.4rem; font-weight:800; color:#fff; margin:0 0 4px;">RRB VIJETHA (ఆర్ఆర్బీ విజేత)</h2>
+        <p style="font-size:0.84rem; color:#93c5fd; margin:0;">2026–2027 Railway Recruitment & Exam Preparation Portal</p>
+      </div>
+
+      <!-- Gate Body -->
+      <div class="auth-body" style="padding:22px 24px;">
+        
+        <!-- STEP 1: Enter Mobile / Email -->
+        <div id="otp-step-1">
+          <div style="text-align:center; margin-bottom:16px;">
+            <h3 style="font-size:1.08rem; font-weight:800; color:var(--text-primary); margin-bottom:3px;">
+              Enter Mobile Number or Email to Access
+            </h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
+              కొనసాగడానికి మీ మొబైల్ నంబర్ లేదా ఈమెయిల్ నమోదు చేయండి
+            </p>
+          </div>
+
+          <!-- Type Switcher Tabs -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
+            <button type="button" id="otp-tab-phone" class="btn btn-primary" onclick="App.switchOtpContactType('phone')" style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700;">
+              <span>📱</span> Mobile Number
+            </button>
+            <button type="button" id="otp-tab-email" class="btn btn-outline" onclick="App.switchOtpContactType('email')" style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700;">
+              <span>📧</span> Email ID
+            </button>
+          </div>
+
+          <!-- Form 1 -->
+          <form onsubmit="App.handleSendOtp(event)">
+            <!-- Phone input container -->
+            <div id="otp-phone-group" class="form-group">
+              <label class="form-label">Indian Mobile Number (భారతీయ మొబైల్ నంబర్) *</label>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="background:var(--bg-elevated); border:1px solid var(--border-color); padding:10px 14px; border-radius:var(--radius-md); font-weight:800; font-size:0.92rem; color:var(--text-primary);">+91</span>
+                <input type="tel" id="otp-input-phone" class="text-input" style="flex:1; font-size:1.05rem; letter-spacing:0.04em;" placeholder="9848012345" maxlength="10" />
+              </div>
+              <span style="font-size:0.73rem; color:var(--text-muted); margin-top:4px; display:block;">Enter 10-digit mobile number (e.g. 9848012345)</span>
+            </div>
+
+            <!-- Email input container -->
+            <div id="otp-email-group" class="form-group hidden">
+              <label class="form-label">Email Address (ఈమెయిల్ చిరునామా) *</label>
+              <input type="email" id="otp-input-email" class="text-input" style="width:100%; font-size:0.95rem;" placeholder="bapatlakesavamanoj@gmail.com" />
+              <span style="font-size:0.73rem; color:var(--text-muted); margin-top:4px; display:block;">We will send your 6-digit verification code to this email</span>
+            </div>
+
+            <!-- Candidate Name (Optional) -->
+            <div class="form-group">
+              <label class="form-label">Candidate Name / అభ్యర్థి పేరు (Optional)</label>
+              <input type="text" id="otp-input-name" class="text-input" style="width:100%;" placeholder="e.g. Bapatla Kesava Manoj" />
+            </div>
+
+            <button type="submit" id="btn-send-otp" class="btn btn-primary btn-lg" style="width:100%; margin-top:12px; font-weight:800; font-size:0.96rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>📩 Get Verification OTP (OTP పొందండి)</span> →
+            </button>
+          </form>
+
+          <!-- Quick Demo Access Button -->
+          <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-color); text-align:center;">
+            <button type="button" class="btn btn-soft btn-sm" onclick="App.quickDemoOtpAccess()" style="width:100%; font-size:0.8rem; color:var(--primary); font-weight:700;">
+              ⚡ Quick Demo Login (Auto-fill Mobile & Test OTP)
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Enter 6-Digit OTP -->
+        <div id="otp-step-2" class="hidden">
+          <div style="text-align:center; margin-bottom:14px;">
+            <div style="font-size:2rem; margin-bottom:2px;">🔑</div>
+            <h3 style="font-size:1.12rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">
+              Enter Verification Code (OTP)
+            </h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
+              6-అంకెల ఓటీపీ నమోదు చేయండి
+            </p>
+            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:700;">
+              <span>Sent to:</span>
+              <strong id="otp-sent-to-label">+91 9848012345</strong>
+              <a href="javascript:void(0)" onclick="App.backToOtpStep1()" style="color:#2563eb; text-decoration:underline; margin-left:4px;">Change</a>
+            </div>
+          </div>
+
+          <!-- Live OTP Simulation Flash Banner -->
+          <div id="otp-flash-banner" style="margin-bottom:14px; padding:10px 14px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:var(--radius-md); color:#065f46; font-size:0.84rem; text-align:center;">
+            <!-- Dynamically populated with OTP code -->
+          </div>
+
+          <!-- Form 2: OTP Verification -->
+          <form onsubmit="App.handleVerifyOtp(event)">
+            <div class="form-group" style="text-align:center;">
+              <label class="form-label" style="margin-bottom:8px;">Enter 6-Digit Code Below</label>
+              
+              <!-- 6 Individual Digit Inputs -->
+              <div class="otp-inputs-row" style="display:flex; justify-content:center; gap:8px;">
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d1" oninput="App.onOtpDigitInput(this, 1)" onkeydown="App.onOtpDigitKeyDown(event, 1)" />
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d2" oninput="App.onOtpDigitInput(this, 2)" onkeydown="App.onOtpDigitKeyDown(event, 2)" />
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d3" oninput="App.onOtpDigitInput(this, 3)" onkeydown="App.onOtpDigitKeyDown(event, 3)" />
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d4" oninput="App.onOtpDigitInput(this, 4)" onkeydown="App.onOtpDigitKeyDown(event, 4)" />
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d5" oninput="App.onOtpDigitInput(this, 5)" onkeydown="App.onOtpDigitKeyDown(event, 5)" />
+                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d6" oninput="App.onOtpDigitInput(this, 6)" onkeydown="App.onOtpDigitKeyDown(event, 6)" />
+              </div>
+
+              <!-- Error message box -->
+              <div id="otp-error-msg" class="hidden" style="color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:8px;"></div>
+            </div>
+
+            <button type="submit" id="btn-verify-otp" class="btn btn-primary btn-lg" style="width:100%; margin-top:12px; font-weight:800; font-size:0.98rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>✓ Verify & Access RRB Vijetha (ధృవీకరించండి)</span> →
+            </button>
+
+            <!-- Resend timer & actions -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:0.8rem;">
+              <span id="otp-timer-label" style="color:var(--text-muted);">Resend OTP in <strong id="otp-timer-count">45</strong>s</span>
+              <button type="button" id="btn-resend-otp" class="btn btn-outline btn-sm hidden" onclick="App.handleResendOtp()">
+                ↻ Resend OTP
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Gate Footer Note -->
+      <div style="background:var(--bg-elevated); padding:10px 18px; border-top:1px solid var(--border-color); text-align:center; font-size:0.74rem; color:var(--text-muted);">
+        🔒 Secure Verification • No Password Required • RRB NTPC, ALP, Group D, JE & Technician 2026–2027
+      </div>
+
     </div>
   </div>
 

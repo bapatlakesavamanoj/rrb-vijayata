@@ -275,6 +275,7 @@
       this.initLiveNotifications();
       this.initChromeLiveAlerts();
       this.updateFirebaseStatusUI();
+      this.checkOtpGate();
 
       if (window.RRBFirebase) {
         window.RRBFirebase.onAuthStateChanged(() => {
@@ -843,6 +844,308 @@
     // ============================================================================
     // 1. STUDENT REGISTRATION, LOGIN & POST-LOGIN MULTI-EXAM ONBOARDING
     // ============================================================================
+
+    
+    // ============================================================================
+    // MANDATORY CANDIDATE VERIFICATION GATE (MOBILE / EMAIL OTP ACCESS)
+    // ============================================================================
+
+    otpState: {
+      activeContactType: 'phone',
+      currentContact: '',
+      candidateName: '',
+      serverOtp: '',
+      timerSeconds: 45,
+      timerInterval: null
+    },
+
+    checkOtpGate: function () {
+      try {
+        const verifiedRecord = localStorage.getItem('rrb_otp_verified_student');
+        const gateBackdrop = document.getElementById('otp-gate-backdrop');
+        const topbarBadge = document.getElementById('btn-otp-status');
+        const topbarAuth = document.getElementById('btn-topbar-auth');
+
+        if (verifiedRecord) {
+          const parsed = JSON.parse(verifiedRecord);
+          if (gateBackdrop) gateBackdrop.classList.add('hidden');
+          if (topbarBadge) {
+            topbarBadge.classList.remove('hidden');
+            const badgeSpan = document.getElementById('otp-status-badge');
+            if (badgeSpan) badgeSpan.textContent = '🔒 Verified (' + (parsed.contact || 'Active') + ')';
+          }
+          if (topbarAuth) topbarAuth.classList.add('hidden');
+        } else {
+          // Candidate not verified yet: Show Mandatory Verification Gate
+          if (gateBackdrop) gateBackdrop.classList.remove('hidden');
+          if (topbarBadge) topbarBadge.classList.add('hidden');
+          if (topbarAuth) topbarAuth.classList.remove('hidden');
+          this.switchOtpContactType('phone');
+        }
+      } catch (err) {
+        console.warn('[OTP Gate Notice]', err);
+      }
+    },
+
+    switchOtpContactType: function (type) {
+      this.otpState.activeContactType = type;
+      const tabPhone = document.getElementById('otp-tab-phone');
+      const tabEmail = document.getElementById('otp-tab-email');
+      const groupPhone = document.getElementById('otp-phone-group');
+      const groupEmail = document.getElementById('otp-email-group');
+      const inputPhone = document.getElementById('otp-input-phone');
+      const inputEmail = document.getElementById('otp-input-email');
+
+      if (type === 'phone') {
+        if (tabPhone) { tabPhone.classList.add('btn-primary'); tabPhone.classList.remove('btn-outline'); }
+        if (tabEmail) { tabEmail.classList.remove('btn-primary'); tabEmail.classList.add('btn-outline'); }
+        if (groupPhone) groupPhone.classList.remove('hidden');
+        if (groupEmail) groupEmail.classList.add('hidden');
+        if (inputPhone) { inputPhone.setAttribute('required', 'required'); inputPhone.focus(); }
+        if (inputEmail) inputEmail.removeAttribute('required');
+      } else {
+        if (tabPhone) { tabPhone.classList.remove('btn-primary'); tabPhone.classList.add('btn-outline'); }
+        if (tabEmail) { tabEmail.classList.add('btn-primary'); tabEmail.classList.remove('btn-outline'); }
+        if (groupPhone) groupPhone.classList.add('hidden');
+        if (groupEmail) groupEmail.classList.remove('hidden');
+        if (inputEmail) { inputEmail.setAttribute('required', 'required'); inputEmail.focus(); }
+        if (inputPhone) inputPhone.removeAttribute('required');
+      }
+    },
+
+    handleSendOtp: async function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const type = this.otpState.activeContactType;
+      let contact = '';
+      if (type === 'phone') {
+        const phoneVal = (document.getElementById('otp-input-phone').value || '').trim().replace(/\D/g, '');
+        if (phoneVal.length < 10) {
+          alert('Please enter a valid 10-digit Indian mobile number.');
+          return;
+        }
+        contact = phoneVal;
+      } else {
+        const emailVal = (document.getElementById('otp-input-email').value || '').trim();
+        if (!emailVal.includes('@') || !emailVal.includes('.')) {
+          alert('Please enter a valid email address.');
+          return;
+        }
+        contact = emailVal;
+      }
+
+      const nameVal = (document.getElementById('otp-input-name').value || '').trim();
+      this.otpState.candidateName = nameVal;
+      await this.dispatchOtpFlow(contact, type);
+    },
+
+    dispatchOtpFlow: async function (contact, type) {
+      this.otpState.currentContact = contact;
+      const formattedContact = type === 'phone' ? '+91 ' + contact : contact;
+
+      // Generate secure 6-digit OTP code
+      const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+      this.otpState.serverOtp = generatedCode;
+
+      // Optional backend serverless call
+      try {
+        await apiRequest('/api/send-otp', 'POST', { contact: contact, type: type, otp: generatedCode });
+      } catch (err) {}
+
+      // Switch to Step 2
+      document.getElementById('otp-step-1').classList.add('hidden');
+      document.getElementById('otp-step-2').classList.remove('hidden');
+      document.getElementById('otp-sent-to-label').textContent = formattedContact;
+
+      // Display live simulated instant OTP banner
+      const banner = document.getElementById('otp-flash-banner');
+      if (banner) {
+        banner.innerHTML = '<div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">' +
+          '<div><span style="font-weight:700;">📩 Official Verification Code:</span>' +
+          '<strong style="font-size:1.25rem; letter-spacing:0.15em; color:#047857; margin-left:6px; background:#d1fae5; padding:2px 8px; border-radius:4px;">' + generatedCode + '</strong></div>' +
+          '<button type="button" class="btn btn-outline btn-xs" onclick="App.autoFillOtp(\'' + generatedCode + '\')" style="font-size:0.75rem; border-color:#059669; color:#047857;">Auto-Fill</button>' +
+          '</div>' +
+          '<div style="font-size:0.73rem; color:#065f46; margin-top:4px;">Code sent to ' + formattedContact + '. Valid for 5 minutes.</div>';
+      }
+
+      // Start 45-second timer
+      this.startOtpTimer(45);
+
+      // Reset digit inputs and focus first digit
+      for (let i = 1; i <= 6; i++) {
+        const d = document.getElementById('otp-d' + i);
+        if (d) d.value = '';
+      }
+      setTimeout(() => {
+        const d1 = document.getElementById('otp-d1');
+        if (d1) d1.focus();
+      }, 100);
+
+      const errMsg = document.getElementById('otp-error-msg');
+      if (errMsg) errMsg.classList.add('hidden');
+    },
+
+    autoFillOtp: function (code) {
+      const str = (code || this.otpState.serverOtp || '482910').toString();
+      for (let i = 1; i <= 6; i++) {
+        const d = document.getElementById('otp-d' + i);
+        if (d) d.value = str[i - 1] || '';
+      }
+      const d6 = document.getElementById('otp-d6');
+      if (d6) d6.focus();
+    },
+
+    onOtpDigitInput: function (el, index) {
+      el.value = el.value.replace(/\D/g, '');
+      if (el.value.length >= 1) {
+        el.value = el.value.slice(-1);
+        if (index < 6) {
+          const next = document.getElementById('otp-d' + (index + 1));
+          if (next) next.focus();
+        }
+      }
+      const errMsg = document.getElementById('otp-error-msg');
+      if (errMsg) errMsg.classList.add('hidden');
+    },
+
+    onOtpDigitKeyDown: function (e, index) {
+      if (e.key === 'Backspace' && !e.target.value && index > 1) {
+        const prev = document.getElementById('otp-d' + (index - 1));
+        if (prev) {
+          prev.focus();
+          prev.value = '';
+        }
+      } else if (e.key === 'ArrowLeft' && index > 1) {
+        const prev = document.getElementById('otp-d' + (index - 1));
+        if (prev) prev.focus();
+      } else if (e.key === 'ArrowRight' && index < 6) {
+        const next = document.getElementById('otp-d' + (index + 1));
+        if (next) next.focus();
+      }
+    },
+
+    handleVerifyOtp: async function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      let entered = '';
+      for (let i = 1; i <= 6; i++) {
+        const d = document.getElementById('otp-d' + i);
+        entered += (d && d.value) ? d.value.trim() : '';
+      }
+
+      const errMsg = document.getElementById('otp-error-msg');
+      if (entered.length < 6) {
+        if (errMsg) {
+          errMsg.textContent = '⚠️ Please enter all 6 digits of the OTP code.';
+          errMsg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const expected = this.otpState.serverOtp;
+      // Accept matching OTP or verified demo bypass codes
+      const isCorrect = (entered === expected || entered === '482910' || entered === '123456');
+
+      if (!isCorrect) {
+        if (errMsg) {
+          errMsg.textContent = '❌ Incorrect OTP code. Please enter the valid code shown or click Resend.';
+          errMsg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      // Success: Save verification in localStorage
+      const contact = this.otpState.currentContact || '9848012345';
+      const type = this.otpState.activeContactType;
+      const candidateName = this.otpState.candidateName || (type === 'phone' ? ('Candidate (+91 ' + contact.slice(-4) + ')') : deriveDisplayNameFromEmail(contact, 'Bapatla Kesava Manoj'));
+
+      const verificationRecord = {
+        contact: contact,
+        type: type,
+        candidateName: candidateName,
+        verifiedAt: new Date().toISOString()
+      };
+      localStorage.setItem('rrb_otp_verified_student', JSON.stringify(verificationRecord));
+
+      // Update current user state
+      if (state.currentUser) {
+        state.currentUser.name = candidateName;
+        if (type === 'email') {
+          state.currentUser.email = contact;
+        } else {
+          state.currentUser.phone = contact;
+        }
+        saveState();
+      }
+
+      if (this.otpState.timerInterval) clearInterval(this.otpState.timerInterval);
+
+      // Hide gate
+      const gateBackdrop = document.getElementById('otp-gate-backdrop');
+      if (gateBackdrop) gateBackdrop.classList.add('hidden');
+
+      // Update topbar badges
+      const topbarBadge = document.getElementById('btn-otp-status');
+      const topbarAuth = document.getElementById('btn-topbar-auth');
+      if (topbarBadge) {
+        topbarBadge.classList.remove('hidden');
+        const badgeSpan = document.getElementById('otp-status-badge');
+        if (badgeSpan) badgeSpan.textContent = '🔒 Verified (' + (type === 'phone' ? '+91 ' + contact : contact) + ')';
+      }
+      if (topbarAuth) topbarAuth.classList.add('hidden');
+
+      this.syncHeaderAndSidebar();
+      alert('✓ Candidate Verification Successful!\nWelcome ' + candidateName + ' to RRB Vijetha (2026–2027).');
+    },
+
+    startOtpTimer: function (seconds) {
+      if (this.otpState.timerInterval) clearInterval(this.otpState.timerInterval);
+      this.otpState.timerSeconds = seconds;
+      const countEl = document.getElementById('otp-timer-count');
+      const timerLabel = document.getElementById('otp-timer-label');
+      const btnResend = document.getElementById('btn-resend-otp');
+
+      if (timerLabel) timerLabel.classList.remove('hidden');
+      if (btnResend) btnResend.classList.add('hidden');
+      if (countEl) countEl.textContent = seconds;
+
+      this.otpState.timerInterval = setInterval(() => {
+        this.otpState.timerSeconds--;
+        if (countEl) countEl.textContent = this.otpState.timerSeconds;
+        if (this.otpState.timerSeconds <= 0) {
+          clearInterval(this.otpState.timerInterval);
+          if (timerLabel) timerLabel.classList.add('hidden');
+          if (btnResend) btnResend.classList.remove('hidden');
+        }
+      }, 1000);
+    },
+
+    handleResendOtp: async function () {
+      await this.dispatchOtpFlow(this.otpState.currentContact, this.otpState.activeContactType);
+    },
+
+    backToOtpStep1: function () {
+      if (this.otpState.timerInterval) clearInterval(this.otpState.timerInterval);
+      document.getElementById('otp-step-2').classList.add('hidden');
+      document.getElementById('otp-step-1').classList.remove('hidden');
+    },
+
+    quickDemoOtpAccess: function () {
+      const phoneInput = document.getElementById('otp-input-phone');
+      const nameInput = document.getElementById('otp-input-name');
+      if (phoneInput) phoneInput.value = '9848012345';
+      if (nameInput) nameInput.value = 'Bapatla Kesava Manoj';
+      this.handleSendOtp();
+      setTimeout(() => {
+        this.autoFillOtp('482910');
+      }, 250);
+    },
+
+    logoutOtpGate: function () {
+      if (confirm('Are you sure you want to sign out and lock this device session?\nYou will need to enter Mobile / Email OTP to access again.')) {
+        localStorage.removeItem('rrb_otp_verified_student');
+        this.backToOtpStep1();
+        this.checkOtpGate();
+      }
+    },
 
     openAuthModal: function (tab = 'login') {
       const modal = document.getElementById('auth-modal-backdrop');

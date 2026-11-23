@@ -76,6 +76,12 @@ assert(typeof liveNotifHandler === 'function', 'api/live-notifications exports a
 const notifHandler = require(path.join(ROOT, 'api/notifications.js'));
 assert(typeof notifHandler === 'function', 'api/notifications exports a valid request handler function');
 
+const sendOtpHandler = require(path.join(ROOT, 'api/send-otp.js'));
+assert(typeof sendOtpHandler === 'function', 'api/send-otp exports a valid request handler function');
+
+const verifyOtpHandler = require(path.join(ROOT, 'api/verify-otp.js'));
+assert(typeof verifyOtpHandler === 'function', 'api/verify-otp exports a valid request handler function');
+
 // 6. Test Responsive Layout & Print Styling
 console.log('\n[Suite 6: CSS & Responsive Styling]');
 const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');

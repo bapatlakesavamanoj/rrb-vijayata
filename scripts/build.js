@@ -102,7 +102,9 @@ const jsFiles = [
   'api/notifications.js',
   'api/subscribe-alert.js',
   'api/send-custom-alert.js',
-  'api/save-smtp-config.js'
+  'api/save-smtp-config.js',
+  'api/send-otp.js',
+  'api/verify-otp.js'
 ];
 jsFiles.forEach(f => {
   if (fs.existsSync(path.join(ROOT, f))) checkSyntax(f);

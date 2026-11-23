@@ -1325,6 +1325,65 @@ body[data-lang="te"] .bilingual-block {
   padding: 24px 28px;
 }
 
+/* ============================================================================
+   STUDENT ACCESS OTP VERIFICATION GATE STYLING
+   ============================================================================ */
+.otp-gate-card {
+  animation: otpGateAppear 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes otpGateAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.otp-digit {
+  width: 52px;
+  height: 58px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.otp-digit:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .otp-digit {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .otp-digit:focus {
+  background: #0f172a;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+}
+
+@media (max-width: 480px) {
+  .otp-digit {
+    width: 42px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+}
+
 .form-group {
   margin-bottom: 14px;
 }
