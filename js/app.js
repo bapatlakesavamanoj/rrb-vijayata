@@ -1056,22 +1056,65 @@
         return;
       }
 
-      // Success: Save verification in localStorage
+      if (this.otpState.timerInterval) clearInterval(this.otpState.timerInterval);
+
+      // Transition to Step 3: Enter Name & Age
+      document.getElementById('otp-step-2').classList.add('hidden');
+      const step3 = document.getElementById('otp-step-3');
+      if (step3) step3.classList.remove('hidden');
+
+      const nameInput = document.getElementById('candidate-profile-name');
+      const ageInput = document.getElementById('candidate-profile-age');
+      const examSelect = document.getElementById('candidate-profile-exam');
+
+      if (nameInput) {
+        nameInput.value = this.otpState.candidateName || (state.currentUser && state.currentUser.name) || 'Bapatla Kesava Manoj';
+        setTimeout(() => nameInput.focus(), 150);
+      }
+      if (ageInput) {
+        ageInput.value = (state.currentUser && state.currentUser.age) || '21';
+      }
+      if (examSelect && state.currentUser && state.currentUser.examId) {
+        examSelect.value = state.currentUser.examId;
+      }
+    },
+
+    handleSaveCandidateProfile: async function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+
+      const nameInput = document.getElementById('candidate-profile-name');
+      const ageInput = document.getElementById('candidate-profile-age');
+      const catSelect = document.getElementById('candidate-profile-category');
+      const examSelect = document.getElementById('candidate-profile-exam');
+
+      const name = (nameInput && nameInput.value.trim()) || 'Bapatla Kesava Manoj';
+      const age = parseInt((ageInput && ageInput.value) || '21', 10);
+      const category = (catSelect && catSelect.value) || 'OBC';
+      const examId = (examSelect && examSelect.value) || 'ntpc-ug';
+
       const contact = this.otpState.currentContact || '9848012345';
       const type = this.otpState.activeContactType;
-      const candidateName = this.otpState.candidateName || (type === 'phone' ? ('Candidate (+91 ' + contact.slice(-4) + ')') : deriveDisplayNameFromEmail(contact, 'Bapatla Kesava Manoj'));
 
       const verificationRecord = {
         contact: contact,
         type: type,
-        candidateName: candidateName,
+        candidateName: name,
+        age: age,
+        category: category,
+        examId: examId,
         verifiedAt: new Date().toISOString()
       };
       localStorage.setItem('rrb_otp_verified_student', JSON.stringify(verificationRecord));
 
-      // Update current user state
+      // Update current user state with Name & Age
       if (state.currentUser) {
-        state.currentUser.name = candidateName;
+        state.currentUser.name = name;
+        state.currentUser.age = age;
+        state.currentUser.category = category;
+        state.currentUser.examId = examId;
+        if (!state.currentUser.selectedExams.includes(examId)) {
+          state.currentUser.selectedExams.unshift(examId);
+        }
         if (type === 'email') {
           state.currentUser.email = contact;
         } else {
@@ -1080,9 +1123,7 @@
         saveState();
       }
 
-      if (this.otpState.timerInterval) clearInterval(this.otpState.timerInterval);
-
-      // Hide gate
+      // Hide OTP gate and open the app
       const gateBackdrop = document.getElementById('otp-gate-backdrop');
       if (gateBackdrop) gateBackdrop.classList.add('hidden');
 
@@ -1092,12 +1133,13 @@
       if (topbarBadge) {
         topbarBadge.classList.remove('hidden');
         const badgeSpan = document.getElementById('otp-status-badge');
-        if (badgeSpan) badgeSpan.textContent = '🔒 Verified (' + (type === 'phone' ? '+91 ' + contact : contact) + ')';
+        if (badgeSpan) badgeSpan.textContent = '🔒 Verified (' + name + ', Age ' + age + ')';
       }
       if (topbarAuth) topbarAuth.classList.add('hidden');
 
       this.syncHeaderAndSidebar();
-      alert('✓ Candidate Verification Successful!\nWelcome ' + candidateName + ' to RRB Vijetha (2026–2027).');
+      this.navigate('dashboard');
+      alert('✓ Welcome ' + name + ' (Age: ' + age + ')!\nYour RRB Vijetha preparation platform is now open.');
     },
 
     startOtpTimer: function (seconds) {

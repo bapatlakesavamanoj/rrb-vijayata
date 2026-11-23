@@ -412,6 +412,63 @@
           </form>
         </div>
 
+        <!-- STEP 3: Enter Candidate Name & Age -->
+        <div id="otp-step-3" class="hidden">
+          <div style="text-align:center; margin-bottom:16px;">
+            <div style="font-size:2.2rem; margin-bottom:2px;">🎓</div>
+            <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin-bottom:3px;">
+              Candidate Profile Setup
+            </h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
+              మీ పూర్తి పేరు మరియు వయస్సు నమోదు చేసి ప్రవేశించండి
+            </p>
+            <div style="margin-top:6px; display:inline-block; background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:700;">
+              ✓ Mobile / Email Verified via OTP
+            </div>
+          </div>
+
+          <form onsubmit="App.handleSaveCandidateProfile(event)">
+            <!-- Candidate Name -->
+            <div class="form-group">
+              <label class="form-label">Candidate Full Name (పూర్తి పేరు) *</label>
+              <input type="text" id="candidate-profile-name" class="text-input" style="width:100%; font-size:1rem; font-weight:700;" placeholder="e.g. Bapatla Kesava Manoj" required />
+            </div>
+
+            <!-- Candidate Age & Category in 2 columns -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div class="form-group">
+                <label class="form-label">Age in Years (వయస్సు) *</label>
+                <input type="number" id="candidate-profile-age" class="text-input" style="width:100%; font-size:1rem; font-weight:700;" placeholder="21" min="15" max="65" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category (రిజర్వేషన్) *</label>
+                <select id="candidate-profile-category" class="text-input" style="width:100%; font-weight:600;">
+                  <option value="OBC">OBC (Non-Creamy)</option>
+                  <option value="General">General / UR</option>
+                  <option value="EWS">EWS</option>
+                  <option value="SC">SC</option>
+                  <option value="ST">ST</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Target Railway Exam Track -->
+            <div class="form-group">
+              <label class="form-label">Primary Target Exam (లక్ష్య పరీక్ష)</label>
+              <select id="candidate-profile-exam" class="text-input" style="width:100%; font-weight:600;">
+                <option value="ntpc-ug">RRB NTPC Undergraduate (10+2 Level) • 2026</option>
+                <option value="ntpc-grad">RRB NTPC Graduate Level • 2026</option>
+                <option value="group-d">RRB Group D (RRC Level-1) • 2026</option>
+                <option value="alp">RRB ALP (Assistant Loco Pilot) • 2026</option>
+              </select>
+            </div>
+
+            <button type="submit" id="btn-save-open-app" class="btn btn-primary btn-lg" style="width:100%; margin-top:14px; font-weight:800; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>🚀 Save & Open RRB Vijetha (యాప్‌ను తెరవండి)</span> →
+            </button>
+          </form>
+        </div>
+
       </div>
 
       <!-- Gate Footer Note -->
