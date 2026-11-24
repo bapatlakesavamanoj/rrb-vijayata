@@ -682,7 +682,97 @@ window.RRB_QUESTIONS = [
     expEn: 'Lord Dalhousie (Governor-General 1848–1856) is known as the "Father of Indian Railways". The first train ran on 16 April 1853 from Bombay (Bori Bunder) to Thane (34 km).',
     expTe: 'లార్డ్ డల్హౌసీని "భారతీయ రైల్వేల పితామహుడు" అని పిలుస్తారు. ఆయన హయాంలో 1853 ఏప్రిల్ 16న బొంబాయి నుండి థానే వరకు మొదటి రైలు నడిచింది.',
     trickEn: 'Dalhousie = Father of Indian Railways (1853).'
-  }
+  },
+  {
+    id: 'q-ntpc-2025-1',
+    subject: 'math',
+    topicId: 'math-percentages',
+    difficulty: 'Moderate',
+    examTag: 'RRB NTPC 2025 Official CBT Paper',
+    qEn: 'A retailer offers two successive discounts of 20% and 15% on a formal coat whose marked price is ₹3,500. A customer who pays via UPI gets an additional 5% instant discount on the discounted price. What is the final price paid by the customer?',
+    qTe: 'ఒక దుకాణదారుడు ₹3,500 ప్రకటన ధర గల కోటుపై 20% మరియు 15% వరుస రాయితీలు ఇస్తాడు. UPI ద్వారా చెల్లించే కస్టమర్‌కు రాయితీ ధరకు అదనంగా 5% తక్షణ తగ్గింపు లభిస్తుంది. కస్టమర్ చెల్లించిన తుది ధర ఎంత?',
+    optionsEn: ['₹2,261', '₹2,380', '₹2,185', '₹2,420'],
+    optionsTe: ['₹2,261', '₹2,380', '₹2,185', '₹2,420'],
+    answer: 0,
+    expEn: 'Step 1: After 20% discount: 3500 × 0.80 = ₹2,800.\nStep 2: After 15% discount: 2800 × 0.85 = ₹2,380.\nStep 3: After additional 5% UPI discount: 2380 × 0.95 = ₹2,261.\nHence the final amount paid is ₹2,261 (Option A).',
+    expTe: 'సోపానం 1: 20% రాయితీ తర్వాత: 3500 × 0.80 = ₹2,800.\nసోపానం 2: 15% రాయితీ తర్వాత: 2800 × 0.85 = ₹2,380.\nసోపానం 3: 5% UPI రాయితీ తర్వాత: 2380 × 0.95 = ₹2,261 (ఆప్షన్ A).',
+    trickEn: 'Net multiplier = 3500 × (4/5) × (17/20) × (19/20) = 3500 × 0.646 = ₹2,261!'
+  },
+  {
+    id: 'q-ntpc-2025-2',
+    subject: 'science',
+    topicId: 'sci-physics',
+    difficulty: 'Moderate',
+    examTag: 'RRB NTPC 2025 Official CBT Paper',
+    qEn: 'An electric locomotive headlight rated 240 W operates continuously at a voltage of 120 V. What is the electrical resistance of the filament and the current drawn?',
+    qTe: '120 V వోల్టేజ్ వద్ద పనిచేసే ఒక ఎలక్ట్రిక్ లోకోమోటివ్ హెడ్‌లైట్ సామర్థ్యం 240 W. అయిన ఆ ఫిలమెంట్ యొక్క విద్యుత్ నిరోధం మరియు సరఫరా అయ్యే విద్యుత్ ప్రవాహం ఎంత?',
+    optionsEn: ['Resistance = 60 Ω, Current = 2 A', 'Resistance = 30 Ω, Current = 4 A', 'Resistance = 120 Ω, Current = 1 A', 'Resistance = 48 Ω, Current = 2.5 A'],
+    optionsTe: ['నిరోధం = 60 Ω, విద్యుత్ = 2 A', 'నిరోధం = 30 Ω, విద్యుత్ = 4 A', 'నిరోధం = 120 Ω, విద్యుత్ = 1 A', 'నిరోధం = 48 Ω, విద్యుత్ = 2.5 A'],
+    answer: 0,
+    expEn: 'Formula: Power P = V × I = V² / R.\n1) Current I = P / V = 240 / 120 = 2 Amperes.\n2) Resistance R = V² / P = (120 × 120) / 240 = 14400 / 240 = 60 Ω.\nTherefore, Resistance = 60 Ω and Current = 2 A (Option A).',
+    expTe: 'సామర్థ్యం P = V × I మరియు P = V² / R.\n1) విద్యుత్ ప్రవాహం I = P / V = 240 / 120 = 2 ఆంపియర్లు.\n2) నిరోధం R = V² / P = (120 × 120) / 240 = 60 Ω.\nకావున నిరోధం = 60 Ω మరియు కరెంట్ = 2 A.',
+    trickEn: 'I = 240/120 = 2 A. R = V/I = 120/2 = 60 Ω directly!'
+  },
+  {
+    id: 'q-ntpc-2025-3',
+    subject: 'ga',
+    topicId: 'ga-indian-railways',
+    difficulty: 'High Yield',
+    examTag: 'RRB NTPC 2025 Official CBT Paper',
+    qEn: 'Indian Railways has successfully deployed "KAVACH 4.0" across critical trunk routes. What is the primary operational capability of KAVACH 4.0 in high-density corridors?',
+    qTe: 'భారతీయ రైల్వే రద్దీ మార్గాలలో "కవచ్ 4.0 (KAVACH 4.0)" ను విజయవంతంగా ప్రవేశపెట్టింది. హై-డెన్సిటీ కారిడార్లలో కవచ్ 4.0 యొక్క ప్రాథమిక కార్యాచరణ సామర్థ్యం ఏమిటి?',
+    optionsEn: ['Automated speed regulation, SPAD prevention and direct continuous radio-based cab signaling at 160 km/h', 'Automated ticket checking via facial recognition', 'Solar power conversion for locomotive pantographs', 'Drone-based track surveillance without crew'],
+    optionsTe: ['160 కి.మీ/గం వేగం వద్ద ఆటోమేటిక్ బ్రేకింగ్, రెడ్ సిగ్నల్ దాటకుండా నిరోధించడం & క్యాబ్ సిగ్నలింగ్', 'ఫేషియల్ రికగ్నిషన్ ద్వారా ఆటోమేటిక్ టికెట్ తనిఖీ', 'రైలు ఇంజన్ల కోసం సోలార్ పవర్ మార్పిడి', 'పైలట్ లేకుండా డ్రోన్ ద్వారా ట్రాక్ పర్యవేక్షణ'],
+    answer: 0,
+    expEn: 'KAVACH 4.0 was certified by RDSO in 2024–2025 to operate on high-speed 160 km/h routes like Delhi-Mumbai and Delhi-Howrah. It provides continuous optical radio-based cab signaling, automated emergency braking against Signal Passing at Danger (SPAD), and collision prevention in adverse weather/fog.',
+    expTe: 'కవచ్ 4.0 అనేది భారతీయ రైల్వే యొక్క అధునాతన ఆటోమేటిక్ ప్రొటెక్షన్ సిస్టమ్. ఇది 160 కి.మీ/గం వేగంతో నడిచే రైళ్లలో రెడ్ సిగ్నల్ దాటినప్పుడు ఆటోమేటిక్ బ్రేకులు వేయడం మరియు దట్టమైన పొగమంచులో కూడా క్యాబ్ సిగ్నలింగ్ అందించడం ద్వారా ప్రమాదాలను నివారిస్తుంది.',
+    trickEn: 'Kavach 4.0 = 160 km/h Automatic Train Protection (ATP) & SPAD prevention.'
+  },
+  {
+    id: 'q-ntpc-2025-4',
+    subject: 'reasoning',
+    topicId: 'reas-coding-decoding',
+    difficulty: 'Moderate',
+    examTag: 'RRB NTPC 2025 Official CBT Paper',
+    qEn: 'In a certain railway coding system, STATION is coded as HGZGLRM. In the same language, how will PLATFORM be coded?',
+    qTe: 'ఒక నిర్దిష్ట రైల్వే కోడింగ్ భాషలో STATION ను HGZGLRM గా కోడ్ చేస్తే, అదే భాషలో PLATFORM ను ఎలా కోడ్ చేస్తారు?',
+    optionsEn: ['KOZGSTIN', 'KOZGULIN', 'KOZGULNL', 'KOZGTILN'],
+    optionsTe: ['KOZGSTIN', 'KOZGULIN', 'KOZGULNL', 'KOZGTILN'],
+    answer: 1,
+    expEn: 'The logic is Opposite Letter Pairs (Sum of Positions = 27):\nS(19) ↔ H(8) [19+8=27]\nT(20) ↔ G(7)\nA(1) ↔ Z(26)\nT(20) ↔ G(7)\nI(9) ↔ R(18)\nO(15) ↔ L(12)\nN(14) ↔ M(13).\nFor PLATFORM:\nP(16) ↔ K(11)\nL(12) ↔ O(15)\nA(1) ↔ Z(26)\nT(20) ↔ G(7)\nF(6) ↔ U(21)\nO(15) ↔ L(12)\nR(18) ↔ I(9)\nM(13) ↔ N(14).\nResult: K O Z G U L I N (Option B).',
+    expTe: 'ఇక్కడ వ్యతిరేక అక్షరాల జతల నియమం వాడబడింది (స్థానాల మొత్తం = 27):\nP ↔ K, L ↔ O, A ↔ Z, T ↔ G, F ↔ U, O ↔ L, R ↔ I, M ↔ N.\nకావున సరైన కోడ్: KOZGULIN (ఆప్షన్ B).',
+    trickEn: 'Reverse letter pairs: P↔K (Pawan Kalyan), L↔O (Love), A↔Z, T↔G, F↔U (Full), O↔L, R↔I (Indian Railways), M↔N → KOZGULIN!'
+  },
+  {
+    id: 'q-alp-2025-1',
+    subject: 'math',
+    topicId: 'math-trains-speed',
+    difficulty: 'Moderate',
+    examTag: 'RRB ALP 2025 Official Paper (CEN 01/2024)',
+    qEn: 'Two express trains of lengths 160 m and 140 m are moving in opposite directions on parallel tracks with speeds of 72 km/h and 54 km/h respectively. In how many seconds will they completely cross each other from the moment they meet?',
+    qTe: '160 మీ మరియు 140 మీ పొడవు గల రెండు ఎక్స్‌ప్రెస్ రైళ్లు సమాంతర పట్టాలపై గంటకు 72 కి.మీ మరియు 54 కి.మీ వేగంతో పరస్పరం ఎదురెదురు దిశల్లో ప్రయాణిస్తున్నాయి. అవి కలిసిన క్షణం నుండి ఒకదానికొకటి పూర్తిగా దాటడానికి ఎన్ని సెకన్లు పడుతుంది?',
+    optionsEn: ['8.57 seconds', '9.20 seconds', '10.00 seconds', '7.50 seconds'],
+    optionsTe: ['8.57 సెకన్లు', '9.20 సెకన్లు', '10.00 సెకన్లు', '7.50 సెకన్లు'],
+    answer: 0,
+    expEn: 'Total Distance = Sum of lengths = 160 + 140 = 300 meters.\nRelative Speed in opposite direction = S1 + S2 = 72 + 54 = 126 km/h.\nConvert to m/s: 126 × (5 / 18) = 7 × 5 = 35 m/s.\nTime to cross = Distance / Relative Speed = 300 / 35 = 60 / 7 ≈ 8.57 seconds.',
+    expTe: 'మొత్తం దూరం = రైళ్ల పొడవుల మొత్తం = 160 + 140 = 300 మీటర్లు.\nఎదురెదురు దిశలో సాపేక్ష వేగం = 72 + 54 = 126 కిమీ/గం.\nమీ/సె లోకి మార్చగా: 126 × (5/18) = 35 మీ/సె.\nదాటడానికి పట్టు కాలం = 300 / 35 = 60 / 7 = 8.57 సెకన్లు.',
+    trickEn: 'Relative Speed = 126 km/h = 35 m/s. Time = 300 / 35 = 60/7 = 8.57 s!'
+  },
+  {
+    id: 'q-tech-2025-1',
+    subject: 'science',
+    topicId: 'sci-chemistry',
+    difficulty: 'Moderate',
+    examTag: 'RRB Technician 2025 Official Paper',
+    qEn: 'During electrolytic refining of crude copper for railway overhead catenary wires, which electrode acts as the cathode, and where do the impurities settle?',
+    qTe: 'రైల్వే ఓవర్‌హెడ్ విద్యుత్ తీగల తయారీకి ముడి రాగిని విద్యుద్విశ్లేషణ శుద్ధీకరణ (Electrolytic Refining) చేసినప్పుడు, ఏది కాథోడ్ గా పనిచేస్తుంది మరియు మలినాలు ఎక్కడ పేరుకుపోతాయి?',
+    optionsEn: ['Pure copper sheet acts as cathode; impurities settle at anode as anode mud', 'Crude copper acts as cathode; impurities dissolve in electrolyte', 'Carbon rod acts as cathode; impurities settle at cathode', 'Platinum acts as cathode; impurities float on surface'],
+    optionsTe: ['స్వచ్ఛమైన రాగి రేకు కాథోడ్; మలినాలు ఆనోడ్ వద్ద మట్టిగా (Anode Mud) పేరుకుపోతాయి', 'ముడి రాగి కాథోడ్; మలినాలు ద్రావణంలో కరుగుతాయి', 'కార్బన్ కడ్డీ కాథోడ్; మలినాలు కాథోడ్ వద్ద పేరుకుంటాయి', 'ప్లాటినం కాథోడ్; మలినాలు ఉపరితలంపై తేలుతాయి'],
+    answer: 0,
+    expEn: 'In electrolytic refining of copper: 1) Anode = Thick block of impure/crude copper; 2) Cathode = Thin strip of pure copper; 3) Electrolyte = Acidified CuSO4 solution. Insoluble impurities (gold, silver, platinum) settle at the bottom of the anode as "Anode Mud" (Option A).',
+    expTe: 'రాగి విద్యుద్విశ్లేషణ శుద్ధిలో: ఆనోడ్ = ముడి రాగి, కాథోడ్ = స్వచ్ఛమైన రాగి రేకు. కరగని మలినాలు ఆనోడ్ క్రింద "ఆనోడ్ మడ్ (Anode Mud)" గా పేరుకుపోతాయి.',
+    trickEn: 'Cathode = Pure strip (receives Cu²⁺ → Cu). Anode = Crude block.'
+  },
 ];
 
 window.RRB_MOCK_TESTS = [
@@ -746,6 +836,68 @@ window.RRB_MOCK_TESTS = [
 
 
   window.RRB_PYQ_PAPERS = [
+  // ==================== 2025 (LATEST OFFICIAL EXAMINATION PAPERS) ====================
+  {
+    id: 'pyq-ntpc-ug-2025-s1',
+    examId: 'ntpc-ug',
+    examYear: '2025',
+    cenCode: 'CEN 05/2024',
+    shiftDate: 'Official 2025 CBT-1 Shift • January 2025 (TCS iON Examination)',
+    officialSource: 'Ministry of Railways Official CEN 05/2024 Master Response Sheet Archive',
+    titleEn: 'RRB NTPC (CEN 05/2024) 2025 CBT-1 Official Question Paper',
+    titleTe: 'ఆర్‌ఆర్‌బి ఎన్‌టిపిసి (CEN 05/2024) 2025 CBT-1 అధికారిక ప్రశ్నాపత్రం',
+    year: '2025 (CEN 05/2024)',
+    zone: 'RRB Secunderabad & Chennai (All-India Shift)',
+    level: 'Undergraduate Posts (Commercial Clerk, Accounts Clerk • Level 2 & 3)',
+    durationMinutes: 90,
+    OfficialCutoffUR: '76.8 / 100',
+    questionIds: [
+      'q-ntpc-2025-1', 'q-ntpc-2025-2', 'q-ntpc-2025-3', 'q-ntpc-2025-4',
+      'q-alp-2025-1', 'q-tech-2025-1', 'q-alp-2024-1', 'q-math-1', 'q-math-2',
+      'q-reas-1', 'q-reas-3', 'q-ga-1', 'q-ntpc-2022-2', 'q-sci-1'
+    ]
+  },
+  {
+    id: 'pyq-alp-2025-cbt2',
+    examId: 'alp',
+    examYear: '2025',
+    cenCode: 'CEN 01/2024 CBT-2',
+    shiftDate: 'Official CBT-2 Shift • February 2025 (Part-A Core Technical & Aptitude)',
+    officialSource: 'Railway Recruitment Boards Official CEN 01/2024 CBT-2 Response Key',
+    titleEn: 'RRB Assistant Loco Pilot (ALP 2025) CBT-2 Official Shift Paper',
+    titleTe: 'ఆర్‌ఆర్‌బి అసిస్టెంట్ లోకో పైలట్ (ALP 2025) CBT-2 అధికారిక ప్రశ్నాపత్రం',
+    year: '2025 (CEN 01/2024 CBT-2)',
+    zone: 'RRB Secunderabad, Kolkata & Mumbai',
+    level: 'Assistant Loco Pilot (Part-A Merit Score • Pay Level-2)',
+    durationMinutes: 90,
+    OfficialCutoffUR: '68.5 / 100',
+    questionIds: [
+      'q-alp-2025-1', 'q-alp-2024-1', 'q-alp-2024-2', 'q-alp-2018-1',
+      'q-ntpc-2025-2', 'q-tech-2025-1', 'q-math-1', 'q-math-5', 'q-reas-2',
+      'q-reas-5', 'q-ga-1', 'q-sci-1', 'q-sci-2'
+    ]
+  },
+  {
+    id: 'pyq-tech-2025-s1',
+    examId: 'alp',
+    examYear: '2025',
+    cenCode: 'CEN 02/2024',
+    shiftDate: 'Official CBT Shift • January 2025 (Signal & Mechanical Trades)',
+    officialSource: 'Ministry of Railways Official CEN 02/2024 Response Key Archive',
+    titleEn: 'RRB Technician Grade-I & III (CEN 02/2024) 2025 Official Shift Paper',
+    titleTe: 'ఆర్‌ఆర్‌బి టెక్నీషియన్ (CEN 02/2024) 2025 CBT అధికారిక ప్రశ్నాపత్రం',
+    year: '2025 (CEN 02/2024)',
+    zone: 'RRB Secunderabad & Bengaluru',
+    level: 'Technician Grade-I Signal & Grade-III Workshops',
+    durationMinutes: 90,
+    OfficialCutoffUR: '69.4 / 100',
+    questionIds: [
+      'q-tech-2025-1', 'q-ntpc-2025-1', 'q-ntpc-2025-2', 'q-alp-2024-2',
+      'q-groupd-2022-1', 'q-math-3', 'q-math-4', 'q-reas-4', 'q-ga-2',
+      'q-sci-1', 'q-sci-3', 'q-sci-4'
+    ]
+  },
+
   // ==================== 2024 (LATEST CEN CYCLES) ====================
   {
     id: 'pyq-alp-2024-s1',

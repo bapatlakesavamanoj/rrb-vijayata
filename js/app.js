@@ -5410,7 +5410,7 @@
 
           <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
             <a href="data/rrb-official-pyq-booklet-yearwise.html" target="_blank" class="btn btn-success btn-sm" style="font-weight:700;">
-              📚 View 2015–2024 Master PYQ Booklet (All 12 Papers PDF) ↗
+              📚 View 2015–2025 Master PYQ Booklet (All ${window.RRB_PYQ_PAPERS.length} Papers PDF) ↗
             </a>
           </div>
         </div>
@@ -5420,9 +5420,9 @@
           <span style="font-size:0.84rem; font-weight:700; display:flex; align-items:center; color:var(--text-secondary); margin-right:4px;">
             📅 Quick Year Filter:
           </span>
-          ${['all', '2024', '2022', '2021', '2019', '2018', '2016'].map(yr => `
+          ${['all', '2025', '2024', '2022', '2021', '2019', '2018', '2016'].map(yr => `
             <button class="btn btn-sm ${this.pyqFilterYear === yr ? 'btn-primary' : 'btn-soft'}" style="white-space:nowrap;" onclick="App.updatePyqFilter('year', '${yr}')">
-              ${yr === 'all' ? 'All Years (' + window.RRB_PYQ_PAPERS.length + ' Papers)' : yr === '2024' ? '2024 (Latest CEN)' : yr}
+              ${yr === 'all' ? 'All Years (' + window.RRB_PYQ_PAPERS.length + ' Papers)' : yr === '2025' ? '🔥 2025 (Latest Exam)' : yr === '2024' ? '2024 (CEN Official)' : yr}
             </button>
           `).join('')}
         </div>

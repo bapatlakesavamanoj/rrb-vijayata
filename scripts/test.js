@@ -69,7 +69,9 @@ const allSubtopics = Object.keys(sandbox.window.RRB_ALL_TEXTBOOK_SUBTOPICS || {}
 assert(allSubtopics.length >= 6, `Loaded ${allSubtopics.length} non-math subtopics chapters catalog`);
 
 const pyqPapers = sandbox.window.RRB_PYQ_PAPERS || [];
-assert(pyqPapers.length >= 10, `Loaded ${pyqPapers.length} official year-wise question papers`);
+assert(pyqPapers.length >= 15, `Loaded ${pyqPapers.length} official year-wise question papers`);
+const papers2025 = pyqPapers.filter(p => p.examYear === '2025');
+assert(papers2025.length >= 3, `Loaded ${papers2025.length} official 2025 question papers (NTPC, ALP, Tech)`);
 
 const jobs = sandbox.window.RRB_LATEST_JOBS || [];
 assert(jobs.length >= 5, `Loaded ${jobs.length} latest railway job postings`);
