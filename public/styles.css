@@ -1345,6 +1345,24 @@ body[data-lang="te"] .bilingual-block {
   animation: smsSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.sms-otp-highlight {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #047857;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+[data-theme="dark"] .sms-otp-highlight {
+  color: #a7f3d0;
+  background: #064e3b;
+  border-color: #059669;
+}
+
 [data-theme="dark"] .sms-notification-card {
   background: #1e293b;
   border-color: #475569;

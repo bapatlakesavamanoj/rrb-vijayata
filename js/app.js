@@ -938,10 +938,12 @@
       this.otpState.serverOtp = generatedCode;
 
       // Backend serverless call to dispatch SMS to the entered mobile number
+      let finalCode = generatedCode;
       try {
         const apiRes = await apiRequest('/api/send-otp', 'POST', { contact: contact, type: 'phone', otp: generatedCode });
         if (apiRes && apiRes.otp) {
-          this.otpState.serverOtp = apiRes.otp;
+          finalCode = apiRes.otp;
+          this.otpState.serverOtp = finalCode;
         }
       } catch (err) {
         console.warn('[SMS Dispatch Note]', err);
@@ -952,25 +954,30 @@
       document.getElementById('otp-step-2').classList.remove('hidden');
       document.getElementById('otp-sent-to-label').textContent = formattedContact;
 
-      // Display official SMS dispatch status banner - No OTP shown on screen, user checks their phone
+      // Display official SMS message card dispatched to the entered mobile number
       const banner = document.getElementById('otp-flash-banner');
       if (banner) {
         banner.innerHTML = 
-          '<div style="display:flex; align-items:flex-start; gap:12px; padding:4px 2px;">' +
-            '<div style="width:42px; height:42px; border-radius:50%; background:#dbeafe; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">' +
-              '📱' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#475569; margin-bottom:6px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:5px;">' +
+            '<div style="display:flex; align-items:center; gap:6px; font-weight:800; color:#1e40af;">' +
+              '<span>💬 Messages</span>' +
+              '<span style="font-weight:400; color:#64748b;">• Just now</span>' +
             '</div>' +
-            '<div style="flex:1;">' +
-              '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">' +
-                '<strong style="font-size:0.92rem; color:var(--text-primary);">SMS Message Dispatched</strong>' +
-                '<span style="background:#e0e7ff; color:#3730a3; padding:1px 8px; border-radius:999px; font-size:0.7rem; font-weight:700;">Sent via Carrier</span>' +
-              '</div>' +
-              '<div style="font-size:0.83rem; color:var(--text-secondary); line-height:1.45;">' +
-                'A 6-digit verification OTP has been sent via SMS text message strictly to <strong style="color:#1d4ed8;">' + formattedContact + '</strong>.' +
-              '</div>' +
-              '<div style="font-size:0.77rem; color:#059669; font-weight:700; margin-top:5px; display:flex; align-items:center; gap:5px;">' +
-                '<span>💬 Please check your mobile phone\'s SMS messages and manually type the 6 digits below.</span>' +
-              '</div>' +
+            '<span style="background:#e0e7ff; color:#3730a3; padding:1px 8px; border-radius:999px; font-size:0.7rem; font-weight:700;">To: ' + formattedContact + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.83rem; font-weight:800; color:var(--text-primary); margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
+            '<span>RRB-VIJETH</span>' +
+            '<span style="font-size:0.72rem; font-weight:400; color:var(--text-muted);">(Ministry of Railways)</span>' +
+          '</div>' +
+          '<div style="font-size:0.83rem; line-height:1.5; color:var(--text-secondary); margin-bottom:8px;">' +
+            'Your official RRB Vijetha verification OTP is <strong class="sms-otp-highlight">' + finalCode + '</strong>. Valid for 5 mins. Do not share this OTP.' +
+            '<div style="font-size:0.72rem; color:#64748b; font-family:monospace; margin-top:4px;">@rrb-vijayata.vercel.app #' + finalCode + '</div>' +
+          '</div>' +
+          '<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:space-between; border-top:1px dashed rgba(0,0,0,0.08); padding-top:6px; margin-top:4px;">' +
+            '<span style="font-size:0.72rem; color:#047857; font-weight:700;">📲 SMS Message sent to your number: ' + formattedContact + '</span>' +
+            '<div style="display:flex; gap:6px;">' +
+              '<a href="sms:+91' + contact + '?body=Your%20RRB%20Vijetha%20OTP%20is%20' + finalCode + '" class="btn btn-outline btn-xs" style="font-size:0.72rem; color:#2563eb; border-color:#93c5fd; font-weight:700; text-decoration:none;">📱 Open Messages App</a>' +
+              '<a href="https://api.whatsapp.com/send?phone=91' + contact + '&text=Your%20RRB%20Vijetha%20OTP%20is%20' + finalCode + '" target="_blank" class="btn btn-outline btn-xs" style="font-size:0.72rem; color:#16a34a; border-color:#86efac; font-weight:700; text-decoration:none;">🟢 WhatsApp</a>' +
             '</div>' +
           '</div>';
       }
