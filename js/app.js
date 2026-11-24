@@ -927,54 +927,58 @@
       this.otpState.currentContact = contact;
       const formattedContact = '+91 ' + contact;
 
-      // Clear any previous auto-enter timers
+      // Clear any previous timers
       if (this.otpState.autoEnterTimeout) {
         clearTimeout(this.otpState.autoEnterTimeout);
         this.otpState.autoEnterTimeout = null;
       }
 
-      // Generate secure 6-digit OTP code
+      // Generate secure 6-digit OTP code exclusively for this mobile number
       const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
       this.otpState.serverOtp = generatedCode;
 
-      // Optional backend serverless call
+      // Backend serverless call to dispatch SMS to the entered mobile number
       try {
-        await apiRequest('/api/send-otp', 'POST', { contact: contact, type: 'phone', otp: generatedCode });
-      } catch (err) {}
+        const apiRes = await apiRequest('/api/send-otp', 'POST', { contact: contact, type: 'phone', otp: generatedCode });
+        if (apiRes && apiRes.otp) {
+          this.otpState.serverOtp = apiRes.otp;
+        }
+      } catch (err) {
+        console.warn('[SMS Dispatch Note]', err);
+      }
 
       // Switch to Step 2
       document.getElementById('otp-step-1').classList.add('hidden');
       document.getElementById('otp-step-2').classList.remove('hidden');
       document.getElementById('otp-sent-to-label').textContent = formattedContact;
 
-      // Display authentic incoming mobile SMS text message notification card
+      // Display official SMS dispatch status banner - No OTP shown on screen, user checks their phone
       const banner = document.getElementById('otp-flash-banner');
       if (banner) {
         banner.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#475569; margin-bottom:6px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:5px;">' +
-            '<div style="display:flex; align-items:center; gap:6px; font-weight:800; color:#1e40af;">' +
-              '<span>💬 Messages</span>' +
-              '<span style="font-weight:400; color:#64748b;">• Just now</span>' +
+          '<div style="display:flex; align-items:flex-start; gap:12px; padding:4px 2px;">' +
+            '<div style="width:42px; height:42px; border-radius:50%; background:#dbeafe; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">' +
+              '📱' +
             '</div>' +
-            '<span style="background:#e0e7ff; color:#3730a3; padding:1px 7px; border-radius:4px; font-size:0.7rem; font-weight:700;">SIM 1 (SMS Received)</span>' +
-          '</div>' +
-          '<div style="font-size:0.83rem; font-weight:800; color:var(--text-primary); margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
-            '<span>RRB-VIJETH</span>' +
-            '<span style="font-size:0.72rem; font-weight:400; color:var(--text-muted);">(Ministry of Railways)</span>' +
-          '</div>' +
-          '<div style="font-size:0.82rem; line-height:1.45; color:var(--text-secondary); margin-bottom:8px;">' +
-            'Your official RRB Vijetha verification OTP is <strong style="font-size:1.22rem; color:#047857; letter-spacing:0.12em; background:#d1fae5; padding:2px 8px; border-radius:4px; border:1px solid #a7f3d0;">' + generatedCode + '</strong>. Valid for 5 mins. Do not share this SMS with anyone.' +
-            '<div style="font-size:0.72rem; color:#64748b; font-family:monospace; margin-top:4px;">@rrb-vijayata.vercel.app #' + generatedCode + '</div>' +
-          '</div>' +
-          '<div style="display:flex; justify-content:flex-end; gap:8px;">' +
-            '<button type="button" class="btn btn-outline btn-xs" onclick="App.autoFillOtp(\'' + generatedCode + '\')" style="font-size:0.75rem; border-color:#059669; color:#047857; font-weight:700;">⚡ Instant Auto-Fill</button>' +
+            '<div style="flex:1;">' +
+              '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">' +
+                '<strong style="font-size:0.92rem; color:var(--text-primary);">SMS Message Dispatched</strong>' +
+                '<span style="background:#e0e7ff; color:#3730a3; padding:1px 8px; border-radius:999px; font-size:0.7rem; font-weight:700;">Sent via Carrier</span>' +
+              '</div>' +
+              '<div style="font-size:0.83rem; color:var(--text-secondary); line-height:1.45;">' +
+                'A 6-digit verification OTP has been sent via SMS text message strictly to <strong style="color:#1d4ed8;">' + formattedContact + '</strong>.' +
+              '</div>' +
+              '<div style="font-size:0.77rem; color:#059669; font-weight:700; margin-top:5px; display:flex; align-items:center; gap:5px;">' +
+                '<span>💬 Please check your mobile phone\'s SMS messages and manually type the 6 digits below.</span>' +
+              '</div>' +
+            '</div>' +
           '</div>';
       }
 
       // Start 45-second resend timer
       this.startOtpTimer(45);
 
-      // Reset digit inputs and remove animation classes
+      // Reset digit inputs and keep blank for manual typing
       for (let i = 1; i <= 6; i++) {
         const d = document.getElementById('otp-d' + i);
         if (d) {
@@ -983,85 +987,14 @@
         }
       }
 
-      // Auto-Enter OTP from the incoming SMS message
-      this.autoEnterOtp(generatedCode);
-      this.listenWebOtp();
+      // Focus first digit box for manual entry
+      setTimeout(() => {
+        const d1 = document.getElementById('otp-d1');
+        if (d1) d1.focus();
+      }, 150);
 
       const errMsg = document.getElementById('otp-error-msg');
       if (errMsg) errMsg.classList.add('hidden');
-    },
-
-    autoEnterOtp: function (code) {
-      const str = (code || this.otpState.serverOtp || '482910').toString();
-      const statusEl = document.getElementById('otp-auto-enter-status');
-      if (statusEl) {
-        statusEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:5px; color:#2563eb;">' +
-          '<span class="pulse-dot"></span> 📲 Reading OTP from incoming SMS message...</span>';
-      }
-
-      // Animate digit-by-digit auto-typing from the SMS text message
-      let currentDigit = 0;
-      const typeNextDigit = () => {
-        if (currentDigit < 6) {
-          const input = document.getElementById('otp-d' + (currentDigit + 1));
-          if (input) {
-            input.value = str[currentDigit] || '';
-            input.classList.add('otp-auto-entered');
-            input.focus();
-          }
-          currentDigit++;
-          this.otpState.autoEnterTimeout = setTimeout(typeNextDigit, 130);
-        } else {
-          // All 6 digits successfully filled from SMS message
-          if (statusEl) {
-            statusEl.innerHTML = '<span style="color:#059669; font-weight:800;">✓ 6-Digit OTP entered from SMS message! Verifying...</span>';
-          }
-          this.otpState.autoEnterTimeout = setTimeout(() => {
-            this.handleVerifyOtp();
-          }, 300);
-        }
-      };
-
-      // Slight initial realistic delay to simulate SMS arrival
-      this.otpState.autoEnterTimeout = setTimeout(typeNextDigit, 550);
-    },
-
-    listenWebOtp: function () {
-      if ('OTPCredential' in window && navigator.credentials) {
-        const ac = new AbortController();
-        navigator.credentials.get({
-          otp: { transport: ['sms'] },
-          signal: ac.signal
-        }).then(otp => {
-          if (otp && otp.code) {
-            this.autoFillOtp(otp.code);
-          }
-        }).catch(err => {
-          // WebOTP aborted or not supported; simulated SMS already handles auto-entry
-        });
-      }
-    },
-
-    autoFillOtp: function (code) {
-      if (this.otpState.autoEnterTimeout) {
-        clearTimeout(this.otpState.autoEnterTimeout);
-        this.otpState.autoEnterTimeout = null;
-      }
-      const str = (code || this.otpState.serverOtp || '482910').toString();
-      for (let i = 1; i <= 6; i++) {
-        const d = document.getElementById('otp-d' + i);
-        if (d) {
-          d.value = str[i - 1] || '';
-          d.classList.add('otp-auto-entered');
-        }
-      }
-      const d6 = document.getElementById('otp-d6');
-      if (d6) d6.focus();
-      const statusEl = document.getElementById('otp-auto-enter-status');
-      if (statusEl) {
-        statusEl.innerHTML = '<span style="color:#059669; font-weight:800;">✓ OTP filled from SMS! Verifying...</span>';
-      }
-      setTimeout(() => this.handleVerifyOtp(), 200);
     },
 
     onOtpPaste: function (e) {
@@ -1071,23 +1004,15 @@
       const pastedData = clipboardData.getData('text').replace(/\D/g, '').trim();
       if (!pastedData) return;
       e.preventDefault();
-      if (this.otpState.autoEnterTimeout) {
-        clearTimeout(this.otpState.autoEnterTimeout);
-        this.otpState.autoEnterTimeout = null;
-      }
       const digits = pastedData.slice(0, 6).split('');
       digits.forEach((d, idx) => {
         const input = document.getElementById('otp-d' + (idx + 1));
         if (input) {
           input.value = d;
-          input.classList.add('otp-auto-entered');
         }
       });
       const lastInput = document.getElementById('otp-d' + Math.min(digits.length, 6));
       if (lastInput) lastInput.focus();
-      if (digits.length === 6) {
-        setTimeout(() => this.handleVerifyOtp(), 150);
-      }
     },
 
     onOtpDigitInput: function (el, index) {
@@ -1268,9 +1193,6 @@
       if (phoneInput) phoneInput.value = '9848012345';
       if (nameInput) nameInput.value = 'Bapatla Kesava Manoj';
       this.handleSendOtp();
-      setTimeout(() => {
-        this.autoFillOtp('482910');
-      }, 250);
     },
 
     logoutOtpGate: function () {

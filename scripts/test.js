@@ -92,45 +92,51 @@ assert(typeof notifHandler === 'function', 'api/notifications exports a valid re
 const sendOtpHandler = require(path.join(ROOT, 'api/send-otp.js'));
 assert(typeof sendOtpHandler === 'function', 'api/send-otp exports a valid request handler function');
 
-let dummySendRes = {};
-let dummySendStatus = 0;
-sendOtpHandler({ method: 'POST', body: { contact: '9848012345' } }, {
-  setHeader: () => {},
-  status: (code) => { dummySendStatus = code; return { json: (data) => { dummySendRes = data; } }; }
-});
-assert(dummySendStatus === 200 && dummySendRes.channel === 'sms' && dummySendRes.type === 'phone' && dummySendRes.otp.length === 6, 'api/send-otp generates 6-digit OTP exclusively for mobile SMS messages');
+async function testAsyncApis() {
+  let dummySendRes = {};
+  let dummySendStatus = 0;
+  await sendOtpHandler({ method: 'POST', body: { contact: '9848012345' } }, {
+    setHeader: () => {},
+    status: (code) => { dummySendStatus = code; return { json: (data) => { dummySendRes = data; } }; }
+  });
+  assert(dummySendStatus === 200 && dummySendRes.channel === 'sms' && dummySendRes.type === 'phone' && dummySendRes.otp.length === 6, 'api/send-otp generates 6-digit OTP exclusively for mobile SMS messages');
+  assert(dummySendRes.formattedPhone === '+91 9848012345', 'api/send-otp targets entered mobile number strictly (+91 9848012345)');
 
-const verifyOtpHandler = require(path.join(ROOT, 'api/verify-otp.js'));
-assert(typeof verifyOtpHandler === 'function', 'api/verify-otp exports a valid request handler function');
+  const verifyOtpHandler = require(path.join(ROOT, 'api/verify-otp.js'));
+  assert(typeof verifyOtpHandler === 'function', 'api/verify-otp exports a valid request handler function');
 
-let dummyVerifyRes = {};
-verifyOtpHandler({ method: 'POST', body: { otp: dummySendRes.otp, serverOtp: dummySendRes.otp } }, {
-  setHeader: () => {},
-  status: (code) => ({ json: (data) => { dummyVerifyRes = data; } })
-});
-assert(dummyVerifyRes.verified === true && dummyVerifyRes.channel === 'sms', 'api/verify-otp validates SMS OTP code');
+  let dummyVerifyRes = {};
+  verifyOtpHandler({ method: 'POST', body: { contact: '9848012345', otp: dummySendRes.otp, serverOtp: dummySendRes.otp } }, {
+    setHeader: () => {},
+    status: (code) => ({ json: (data) => { dummyVerifyRes = data; } })
+  });
+  assert(dummyVerifyRes.verified === true && dummyVerifyRes.channel === 'sms', 'api/verify-otp validates SMS OTP code');
 
-// 6. Test OTP Gate HTML
-console.log('\n[Suite 6: Candidate Verification Gate Verification]');
-const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-assert(indexHtml.includes('id="otp-input-phone"'), 'index.html contains Mobile number input #otp-input-phone');
-assert(!indexHtml.includes('id="otp-tab-email"'), 'index.html has removed Email switcher tab (SMS Messages Only enforced)');
-assert(!indexHtml.includes('id="otp-input-email"'), 'index.html has removed Email input #otp-input-email');
-assert(indexHtml.includes('sms-notification-card'), 'index.html contains simulated incoming SMS text message notification card');
+  // 6. Test OTP Gate HTML
+  console.log('\n[Suite 6: Candidate Verification Gate Verification]');
+  const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert(indexHtml.includes('id="otp-input-phone"'), 'index.html contains Mobile number input #otp-input-phone');
+  assert(!indexHtml.includes('id="otp-tab-email"'), 'index.html has removed Email switcher tab (SMS Messages Only enforced)');
+  assert(!indexHtml.includes('id="otp-input-email"'), 'index.html has removed Email input #otp-input-email');
+  assert(!indexHtml.includes('id="otp-auto-enter-status"'), 'index.html has removed automatic OTP entry status');
+  assert(indexHtml.includes('sms-notification-card'), 'index.html contains SMS dispatch notification card');
 
-// 6. Test Responsive Layout & Print Styling
-console.log('\n[Suite 6: CSS & Responsive Styling]');
-const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
-assert(css.includes('@media (max-width: 820px)') && css.includes('@media (max-width: 640px)'), 'Mobile & tablet responsive breakpoints (820px, 640px) defined in styles.css');
-assert(css.includes('@media print'), 'Print styling defined for 1-click PYQ PDF generation');
+  // 7. Test Responsive Layout & Print Styling
+  console.log('\n[Suite 7: CSS & Responsive Styling]');
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
+  assert(css.includes('@media (max-width: 820px)') && css.includes('@media (max-width: 640px)'), 'Mobile & tablet responsive breakpoints (820px, 640px) defined in styles.css');
+  assert(css.includes('@media print'), 'Print styling defined for 1-click PYQ PDF generation');
 
-console.log('================================================================');
-console.log(`Results: ${passes} Passed, ${failures} Failed`);
-console.log('================================================================');
+  console.log('================================================================');
+  console.log(`Results: ${passes} Passed, ${failures} Failed`);
+  console.log('================================================================');
 
-if (failures > 0) {
-  process.exit(1);
-} else {
-  console.log('🎉 ALL TESTS PASSED!\n');
-  process.exit(0);
+  if (failures > 0) {
+    process.exit(1);
+  } else {
+    console.log('🎉 ALL TESTS PASSED!\n');
+    process.exit(0);
+  }
 }
+
+testAsyncApis();

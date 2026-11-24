@@ -341,12 +341,12 @@
           <!-- Quick Demo Access Button -->
           <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-color); text-align:center;">
             <button type="button" class="btn btn-soft btn-sm" onclick="App.quickDemoOtpAccess()" style="width:100%; font-size:0.8rem; color:var(--primary); font-weight:700;">
-              ⚡ Quick Demo Login (Simulate Incoming SMS OTP: 482910)
+              ⚡ Quick Fill Demo Mobile Number (9848012345)
             </button>
           </div>
         </div>
 
-        <!-- STEP 2: Enter 6-Digit OTP -->
+        <!-- STEP 2: Enter 6-Digit OTP Received on Phone -->
         <div id="otp-step-2" class="hidden">
           <div style="text-align:center; margin-bottom:14px;">
             <div style="font-size:2rem; margin-bottom:2px;">💬</div>
@@ -354,26 +354,26 @@
               Enter Mobile SMS Verification Code
             </h3>
             <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
-              మొబైల్ మెసేజ్ (SMS) ద్వారా వచ్చిన 6-అంకెల ఓటీపీ నమోదు చేయండి
+              మీ మొబైల్ మెసేజ్ (SMS) లో వచ్చిన 6-అంకెల ఓటీపీని కింద టైప్ చేయండి
             </p>
             <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:700;">
-              <span>💬 Sent to Mobile SMS:</span>
+              <span>💬 SMS Sent to Mobile:</span>
               <strong id="otp-sent-to-label">+91 9848012345</strong>
-              <a href="javascript:void(0)" onclick="App.backToOtpStep1()" style="color:#2563eb; text-decoration:underline; margin-left:4px;">Change</a>
+              <a href="javascript:void(0)" onclick="App.backToOtpStep1()" style="color:#2563eb; text-decoration:underline; margin-left:4px;">Change Number</a>
             </div>
           </div>
 
-          <!-- Live Simulated SMS Notification Banner -->
+          <!-- SMS Dispatch Status Banner -->
           <div id="otp-flash-banner" class="sms-notification-card">
-            <!-- Dynamically populated with SMS text message -->
+            <!-- Dynamically populated with SMS dispatch status -->
           </div>
 
-          <!-- Form 2: OTP Verification -->
+          <!-- Form 2: Manual OTP Verification -->
           <form onsubmit="App.handleVerifyOtp(event)">
             <div class="form-group" style="text-align:center;">
-              <label class="form-label" style="margin-bottom:8px;">Enter 6-Digit OTP Received via SMS</label>
+              <label class="form-label" style="margin-bottom:8px;">Check your phone & enter the 6-digit code:</label>
               
-              <!-- 6 Individual Digit Inputs with Auto-Enter & Paste support -->
+              <!-- 6 Individual Digit Inputs for Manual Entry -->
               <div class="otp-inputs-row" style="display:flex; justify-content:center; gap:8px;">
                 <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d1" autocomplete="one-time-code" onpaste="App.onOtpPaste(event)" oninput="App.onOtpDigitInput(this, 1)" onkeydown="App.onOtpDigitKeyDown(event, 1)" />
                 <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d2" autocomplete="one-time-code" onpaste="App.onOtpPaste(event)" oninput="App.onOtpDigitInput(this, 2)" onkeydown="App.onOtpDigitKeyDown(event, 2)" />
@@ -383,11 +383,13 @@
                 <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d6" autocomplete="one-time-code" onpaste="App.onOtpPaste(event)" oninput="App.onOtpDigitInput(this, 6)" onkeydown="App.onOtpDigitKeyDown(event, 6)" />
               </div>
 
-              <!-- Auto-Enter progress notice -->
-              <div id="otp-auto-enter-status" style="font-size:0.75rem; color:#059669; font-weight:700; margin-top:6px; min-height:18px;"></div>
+              <!-- Manual entry helper note -->
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
+                Type each digit manually as received in your phone's SMS messages.
+              </div>
 
               <!-- Error message box -->
-              <div id="otp-error-msg" class="hidden" style="color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:4px;"></div>
+              <div id="otp-error-msg" class="hidden" style="color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:6px;"></div>
             </div>
 
             <button type="submit" id="btn-verify-otp" class="btn btn-primary btn-lg" style="width:100%; margin-top:12px; font-weight:800; font-size:0.98rem; display:flex; align-items:center; justify-content:center; gap:8px;">
