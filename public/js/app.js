@@ -1011,6 +1011,25 @@
       if (d6) d6.focus();
     },
 
+    onOtpPaste: function (e) {
+      if (!e) return;
+      const clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData) return;
+      const pastedData = clipboardData.getData('text').replace(/\D/g, '').trim();
+      if (!pastedData) return;
+      e.preventDefault();
+      const digits = pastedData.slice(0, 6).split('');
+      digits.forEach((d, idx) => {
+        const input = document.getElementById('otp-d' + (idx + 1));
+        if (input) input.value = d;
+      });
+      const lastInput = document.getElementById('otp-d' + Math.min(digits.length, 6));
+      if (lastInput) lastInput.focus();
+      if (digits.length === 6) {
+        setTimeout(() => this.handleVerifyOtp(), 150);
+      }
+    },
+
     onOtpDigitInput: function (el, index) {
       el.value = el.value.replace(/\D/g, '');
       if (el.value.length >= 1) {
@@ -3972,7 +3991,13 @@
       const subtopic = subtopics.find(st => st.code === activeTopicCode) || subtopics[0];
       const lIdx = (subject.topics.findIndex(t => t.id === lesson.id) + 1) || 1;
       const isDone = state.completedTopics.includes(subtopic.code);
-      const pageNumber = Math.abs(hashCode(subtopic.code)) % 380 + 20;
+      let codeHash = 0;
+      const sCode = String(subtopic.code || '1.1');
+      for (let i = 0; i < sCode.length; i++) {
+        codeHash = ((codeHash << 5) - codeHash) + sCode.charCodeAt(i);
+        codeHash |= 0;
+      }
+      const pageNumber = Math.abs(codeHash) % 380 + 20;
 
       container.innerHTML = `
         <div class="syllabus-container">

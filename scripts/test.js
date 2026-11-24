@@ -51,11 +51,22 @@ vm.createContext(sandbox);
 // Load data files in sandbox
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/exams-and-subjects.js'), 'utf8'), sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/questions-and-papers.js'), 'utf8'), sandbox);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/math-textbook-chapters.js'), 'utf8'), sandbox);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/all-subject-subtopics.js'), 'utf8'), sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/latest-jobs-data.js'), 'utf8'), sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, 'data/notifications-data.js'), 'utf8'), sandbox);
 
 const exams = sandbox.window.RRB_EXAMS || [];
 assert(exams.length >= 4, `Exams dataset loaded ${exams.length} exam cadres (NTPC-UG, NTPC-Graduate, Group D, ALP)`);
+
+const subjects = sandbox.window.RRB_SUBJECTS || [];
+assert(subjects.length === 4, `Loaded 4 official exam subjects (Math, Reasoning, GA, Science)`);
+
+const mathChapters = Object.keys(sandbox.window.RRB_MATH_TEXTBOOK_CHAPTERS || {});
+assert(mathChapters.length >= 13, `Loaded ${mathChapters.length} math textbook chapters with subtopics`);
+
+const allSubtopics = Object.keys(sandbox.window.RRB_ALL_TEXTBOOK_SUBTOPICS || {});
+assert(allSubtopics.length >= 6, `Loaded ${allSubtopics.length} non-math subtopics chapters catalog`);
 
 const pyqPapers = sandbox.window.RRB_PYQ_PAPERS || [];
 assert(pyqPapers.length >= 10, `Loaded ${pyqPapers.length} official year-wise question papers`);

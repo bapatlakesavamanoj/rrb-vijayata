@@ -13,6 +13,7 @@ const PRECACHE_ASSETS = [
   '/data/questions-and-papers.js',
   '/data/videos-and-ai.js',
   '/data/math-textbook-chapters.js',
+  '/data/all-subject-subtopics.js',
   '/data/notifications-data.js',
   '/data/latest-jobs-data.js'
 ];
