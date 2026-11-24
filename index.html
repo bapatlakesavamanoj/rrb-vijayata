@@ -298,44 +298,33 @@
       <!-- Gate Body -->
       <div class="auth-body" style="padding:22px 24px;">
         
-        <!-- STEP 1: Enter Mobile / Email -->
+        <!-- STEP 1: Enter Mobile for SMS OTP -->
         <div id="otp-step-1">
           <div style="text-align:center; margin-bottom:16px;">
-            <h3 style="font-size:1.08rem; font-weight:800; color:var(--text-primary); margin-bottom:3px;">
-              Enter Mobile Number or Email to Access
+            <div style="width:52px; height:52px; border-radius:50%; background:#dbeafe; color:#1e40af; display:inline-flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:8px; box-shadow:0 2px 8px rgba(37,99,235,0.15);">
+              💬
+            </div>
+            <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">
+              Mobile SMS Verification
             </h3>
-            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
-              కొనసాగడానికి మీ మొబైల్ నంబర్ లేదా ఈమెయిల్ నమోదు చేయండి
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin:0;">
+              మొబైల్ మెసేజ్ (SMS) ద్వారా OTP పొంది లాగిన్ అవ్వండి
             </p>
+            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:700;">
+              <span>📱 OTP comes exclusively via Mobile SMS Message</span>
+            </div>
           </div>
 
-          <!-- Type Switcher Tabs -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
-            <button type="button" id="otp-tab-phone" class="btn btn-primary" onclick="App.switchOtpContactType('phone')" style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700;">
-              <span>📱</span> Mobile Number
-            </button>
-            <button type="button" id="otp-tab-email" class="btn btn-outline" onclick="App.switchOtpContactType('email')" style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700;">
-              <span>📧</span> Email ID
-            </button>
-          </div>
-
-          <!-- Form 1 -->
+          <!-- Form 1: Mobile Phone Only -->
           <form onsubmit="App.handleSendOtp(event)">
             <!-- Phone input container -->
             <div id="otp-phone-group" class="form-group">
               <label class="form-label">Indian Mobile Number (భారతీయ మొబైల్ నంబర్) *</label>
               <div style="display:flex; gap:8px; align-items:center;">
-                <span style="background:var(--bg-elevated); border:1px solid var(--border-color); padding:10px 14px; border-radius:var(--radius-md); font-weight:800; font-size:0.92rem; color:var(--text-primary);">+91</span>
-                <input type="tel" id="otp-input-phone" class="text-input" style="flex:1; font-size:1.05rem; letter-spacing:0.04em;" placeholder="9848012345" maxlength="10" />
+                <span style="background:var(--bg-elevated); border:1px solid var(--border-color); padding:10px 14px; border-radius:var(--radius-md); font-weight:800; font-size:0.95rem; color:var(--text-primary);">+91</span>
+                <input type="tel" id="otp-input-phone" class="text-input" style="flex:1; font-size:1.05rem; letter-spacing:0.04em;" placeholder="9848012345" maxlength="10" required />
               </div>
-              <span style="font-size:0.73rem; color:var(--text-muted); margin-top:4px; display:block;">Enter 10-digit mobile number (e.g. 9848012345)</span>
-            </div>
-
-            <!-- Email input container -->
-            <div id="otp-email-group" class="form-group hidden">
-              <label class="form-label">Email Address (ఈమెయిల్ చిరునామా) *</label>
-              <input type="email" id="otp-input-email" class="text-input" style="width:100%; font-size:0.95rem;" placeholder="bapatlakesavamanoj@gmail.com" />
-              <span style="font-size:0.73rem; color:var(--text-muted); margin-top:4px; display:block;">We will send your 6-digit verification code to this email</span>
+              <span style="font-size:0.73rem; color:var(--text-muted); margin-top:4px; display:block;">Enter your 10-digit mobile number to receive verification SMS text message</span>
             </div>
 
             <!-- Candidate Name (Optional) -->
@@ -345,14 +334,14 @@
             </div>
 
             <button type="submit" id="btn-send-otp" class="btn btn-primary btn-lg" style="width:100%; margin-top:12px; font-weight:800; font-size:0.96rem; display:flex; align-items:center; justify-content:center; gap:8px;">
-              <span>📩 Get Verification OTP (OTP పొందండి)</span> →
+              <span>💬 Send OTP via SMS Message (మెసేజ్ ద్వారా OTP పంపండి)</span> →
             </button>
           </form>
 
           <!-- Quick Demo Access Button -->
           <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-color); text-align:center;">
             <button type="button" class="btn btn-soft btn-sm" onclick="App.quickDemoOtpAccess()" style="width:100%; font-size:0.8rem; color:var(--primary); font-weight:700;">
-              ⚡ Quick Demo Login (Auto-fill Mobile & Test OTP)
+              ⚡ Quick Demo Login (Simulate Incoming SMS OTP: 482910)
             </button>
           </div>
         </div>
@@ -360,29 +349,29 @@
         <!-- STEP 2: Enter 6-Digit OTP -->
         <div id="otp-step-2" class="hidden">
           <div style="text-align:center; margin-bottom:14px;">
-            <div style="font-size:2rem; margin-bottom:2px;">🔑</div>
+            <div style="font-size:2rem; margin-bottom:2px;">💬</div>
             <h3 style="font-size:1.12rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">
-              Enter Verification Code (OTP)
+              Enter Mobile SMS Verification Code
             </h3>
             <p style="font-size:0.8rem; color:var(--text-secondary); margin:0;">
-              6-అంకెల ఓటీపీ నమోదు చేయండి
+              మొబైల్ మెసేజ్ (SMS) ద్వారా వచ్చిన 6-అంకెల ఓటీపీ నమోదు చేయండి
             </p>
             <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:700;">
-              <span>Sent to:</span>
+              <span>💬 Sent to Mobile SMS:</span>
               <strong id="otp-sent-to-label">+91 9848012345</strong>
               <a href="javascript:void(0)" onclick="App.backToOtpStep1()" style="color:#2563eb; text-decoration:underline; margin-left:4px;">Change</a>
             </div>
           </div>
 
-          <!-- Live OTP Simulation Flash Banner -->
-          <div id="otp-flash-banner" style="margin-bottom:14px; padding:10px 14px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:var(--radius-md); color:#065f46; font-size:0.84rem; text-align:center;">
-            <!-- Dynamically populated with OTP code -->
+          <!-- Live Simulated SMS Notification Banner -->
+          <div id="otp-flash-banner" class="sms-notification-card">
+            <!-- Dynamically populated with SMS text message -->
           </div>
 
           <!-- Form 2: OTP Verification -->
           <form onsubmit="App.handleVerifyOtp(event)">
             <div class="form-group" style="text-align:center;">
-              <label class="form-label" style="margin-bottom:8px;">Enter 6-Digit Code Below</label>
+              <label class="form-label" style="margin-bottom:8px;">Enter 6-Digit OTP Received via SMS</label>
               
               <!-- 6 Individual Digit Inputs with Auto-Enter & Paste support -->
               <div class="otp-inputs-row" style="display:flex; justify-content:center; gap:8px;">
@@ -394,19 +383,22 @@
                 <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" id="otp-d6" autocomplete="one-time-code" onpaste="App.onOtpPaste(event)" oninput="App.onOtpDigitInput(this, 6)" onkeydown="App.onOtpDigitKeyDown(event, 6)" />
               </div>
 
+              <!-- Auto-Enter progress notice -->
+              <div id="otp-auto-enter-status" style="font-size:0.75rem; color:#059669; font-weight:700; margin-top:6px; min-height:18px;"></div>
+
               <!-- Error message box -->
-              <div id="otp-error-msg" class="hidden" style="color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:8px;"></div>
+              <div id="otp-error-msg" class="hidden" style="color:#dc2626; font-size:0.82rem; font-weight:700; margin-top:4px;"></div>
             </div>
 
             <button type="submit" id="btn-verify-otp" class="btn btn-primary btn-lg" style="width:100%; margin-top:12px; font-weight:800; font-size:0.98rem; display:flex; align-items:center; justify-content:center; gap:8px;">
-              <span>✓ Verify & Access RRB Vijetha (ధృవీకరించండి)</span> →
+              <span>✓ Verify SMS OTP & Open RRB Vijetha (ధృవీకరించండి)</span> →
             </button>
 
             <!-- Resend timer & actions -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:0.8rem;">
-              <span id="otp-timer-label" style="color:var(--text-muted);">Resend OTP in <strong id="otp-timer-count">45</strong>s</span>
+              <span id="otp-timer-label" style="color:var(--text-muted);">Resend SMS in <strong id="otp-timer-count">45</strong>s</span>
               <button type="button" id="btn-resend-otp" class="btn btn-outline btn-sm hidden" onclick="App.handleResendOtp()">
-                ↻ Resend OTP
+                ↻ Resend SMS OTP
               </button>
             </div>
           </form>
@@ -423,7 +415,7 @@
               మీ పూర్తి పేరు మరియు వయస్సు నమోదు చేసి ప్రవేశించండి
             </p>
             <div style="margin-top:6px; display:inline-block; background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:700;">
-              ✓ Mobile / Email Verified via OTP
+              ✓ Mobile Number Verified via SMS Message (మెసేజ్ ద్వారా ధృవీకరించబడింది)
             </div>
           </div>
 
